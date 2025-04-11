@@ -1,12 +1,13 @@
-import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {UserRoles} from "../../../shared/enums/user/userRole.enum";
 import {AuthProviders} from "../../../shared/enums/auth/authProvider";
+import {ReviewEntity} from "../../review/entity/review.entity";
 
 
 @Entity("users")
 export class UserEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string
+    @PrimaryGeneratedColumn()
+    id: number
 
     @Column({ unique: true, nullable: true})
     email: string
@@ -56,4 +57,7 @@ export class UserEntity {
 
     @Column({ nullable: true})
     provider_id: string
+
+    @OneToMany(() => ReviewEntity, review => review.user)
+    reviews: ReviewEntity
 }
