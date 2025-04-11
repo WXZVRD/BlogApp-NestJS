@@ -1,6 +1,6 @@
 import {BadRequestException, ConflictException, Injectable} from "@nestjs/common";
 import {RegisterDto} from "./dto/register.dto";
-import {UserRepository} from "./user.repository";
+import {UserRepository} from "../user/user.repository";
 import * as bcrypt from 'bcryptjs';
 import {UserEntity} from "../user/entities/user.entity";
 import {LoginDto} from "./dto/login.dto";
