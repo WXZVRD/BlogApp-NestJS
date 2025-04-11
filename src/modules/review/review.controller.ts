@@ -7,6 +7,8 @@ interface IReviewController {
     getHello(): string
 
     create(reviewData: ReviewCreateDto): Promise<ReviewEntity>
+
+    getAll(): Promise<ReviewEntity[]>
 }
 
 @Controller('/review')
@@ -14,6 +16,11 @@ export class ReviewController implements IReviewController{
     constructor(
         private readonly reviewService: ReviewService
     ) {
+    }
+
+    @Get()
+    getAll(): Promise<ReviewEntity[]> {
+        return this.reviewService.getAll()
     }
 
     @Post('/create')

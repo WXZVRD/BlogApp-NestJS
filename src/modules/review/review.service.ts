@@ -7,6 +7,7 @@ import {UserRepository} from "../user/user.repository";
 interface IReviewService{
     getHello(): string
     create(reviewData: ReviewCreateDto): Promise<ReviewEntity>
+    getAll(): Promise<ReviewEntity[]>
 }
 
 @Injectable()
@@ -28,6 +29,10 @@ export class ReviewService implements IReviewService{
         const savedReview = await this.reviewRepository.save(createdReview)
 
         return savedReview
+    }
+
+    getAll(): Promise<ReviewEntity[]> {
+        return this.reviewRepository.getAll()
     }
 
     getHello(): string {

@@ -23,6 +23,12 @@ export class ReviewRepository {
         })
     }
 
+    getAll() {
+        return this.reviewRepository.find({
+            relations: ['user']
+        })
+    }
+
     async save(reviewToSave: ReviewEntity ) {
         return await this.reviewRepository.save(reviewToSave)
     }
