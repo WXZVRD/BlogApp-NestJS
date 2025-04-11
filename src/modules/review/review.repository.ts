@@ -1,5 +1,5 @@
 import {ReviewEntity} from "./entity/review.entity";
-import {Repository} from "typeorm";
+import {Repository, UpdateResult} from "typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Injectable} from "@nestjs/common";
 import {ReviewCreateDto} from "./dto/review-create.dto";
@@ -16,11 +16,19 @@ export class ReviewRepository {
         return this.reviewRepository.findOneBy({id})
     }
 
-    create(reviewData: ReviewCreateDto, user: UserEntity) {
+    create(reviewData: ReviewCreateDto, user: UserEntity): ReviewEntity {
         return this.reviewRepository.create({
             content: reviewData.content,
             user: user
         })
+    }
+
+    async update(id: number, reviewData: Partial<ReviewEntity>): Promise<UpdateResult> {
+        return await this.reviewRepository.update(id, reviewData)
+    }
+
+    async delete(id: number): Promise<void> {
+        await this.reviewRepository.delete({ id });
     }
 
     getAll() {
