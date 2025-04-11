@@ -1,8 +1,8 @@
-import {UserEntity} from "../user/entities/user.entity";
 import {InjectRepository} from "@nestjs/typeorm";
 import {Injectable} from "@nestjs/common";
 import {Repository} from "typeorm";
-import {RegisterDto} from "./dto/register.dto";
+import {RegisterDto} from "../auth/dto/register.dto";
+import {UserEntity} from "./entities/user.entity";
 
 @Injectable()
 export class UserRepository {
@@ -13,6 +13,10 @@ export class UserRepository {
 
     findByEmail(email: string) {
         return this.userRepository.findOneBy({email})
+    }
+
+    findById(id: number) {
+        return this.userRepository.findOneBy({id})
     }
 
     create(userData: RegisterDto) {
