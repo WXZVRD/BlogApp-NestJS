@@ -6,8 +6,14 @@ import {UserRepository} from "../user/user.repository";
 
 interface IReviewService{
     getHello(): string
+
     create(reviewData: ReviewCreateDto): Promise<ReviewEntity>
+
     getAll(): Promise<ReviewEntity[]>
+
+    delete(id: number): Promise<void>
+
+    update(id: number, reviewData: ReviewEntity): Promise<void>
 }
 
 @Injectable()
@@ -29,6 +35,18 @@ export class ReviewService implements IReviewService{
         const savedReview = await this.reviewRepository.save(createdReview)
 
         return savedReview
+    }
+
+    async delete(id: number): Promise<void> {
+        await this.reviewRepository.delete(id)
+    }
+
+    async update(id: number, reviewData): Promise<void> {
+        const result = await this.reviewRepository.update(id, reviewData)
+
+        if (result.affected === 0) {
+            throw new NotFoundException('Review not found');
+        }
     }
 
     getAll(): Promise<ReviewEntity[]> {
