@@ -15,6 +15,7 @@ import {LikeEntity} from "./entity/like.entity";
         UserModule
     ],
     controllers: [ReviewController],
-    providers: [ReviewService, ReviewRepository, LikeRepository, LikeService]
+    providers: [ReviewService, ReviewRepository, LikeRepository, LikeService],
+    exports: [ReviewRepository]
 })
 export class ReviewModule{}

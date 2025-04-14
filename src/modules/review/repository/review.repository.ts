@@ -4,6 +4,7 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {Injectable} from "@nestjs/common";
 import {ReviewCreateDto} from "../dto/review-create.dto";
 import {UserEntity} from "../../user/entities/user.entity";
+import {ReviewGetAllDto} from "../dto/review-getAll.dto";
 
 @Injectable()
 export class ReviewRepository {
@@ -11,11 +12,6 @@ export class ReviewRepository {
         @InjectRepository(ReviewEntity)
         private readonly reviewRepository: Repository<ReviewEntity>
     ) {}
-
-    async findById(id: number) {
-        return await this.reviewRepository.findOneBy({id})
-    }
-
     create(reviewData: ReviewCreateDto, user: UserEntity): ReviewEntity {
         return this.reviewRepository.create({
             content: reviewData.content,
@@ -31,7 +27,28 @@ export class ReviewRepository {
         await this.reviewRepository.delete({ id });
     }
 
-    async getAll(): Promise<any[]> {
+    async findById(id: number) {
+
+        return this.reviewRepository
+            .createQueryBuilder('review')
+            .where('review.id = :id', { id: id })
+            .leftJoinAndSelect('review.user', 'author')
+            .leftJoinAndSelect('review.comments', 'comments')
+            .leftJoinAndSelect('review.likes', 'likes')
+            .getOne()
+        /*return await this.reviewRepository.findOne({
+            where: {
+                id: id
+            },
+            relations: ['comments']
+        })*/
+    }
+
+    async getAll(query: ReviewGetAllDto): Promise<ReviewEntity[]> {
+        const { take = 10, page = 1, offset } = query;
+
+        const skip = offset ?? (page - 1) * take;
+
         return this.reviewRepository
             .createQueryBuilder('review')
             .leftJoinAndSelect('review.likes', 'like')
@@ -49,6 +66,8 @@ export class ReviewRepository {
                 'author.last_name',
                 'author.avatarUrl'
             ])
+            .skip(skip)
+            .take(take)
             .getMany();
     }
 

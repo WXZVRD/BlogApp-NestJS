@@ -1,17 +1,20 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, Req} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req} from "@nestjs/common";
 import {ReviewService} from "./services/review.service";
 import {ReviewEntity} from "./entity/review.entity";
 import {ReviewCreateDto} from "./dto/review-create.dto";
 import {ToggleLikeDto} from "./dto/toggle-like.dto";
+import {ReviewGetAllDto} from "./dto/review-getAll.dto";
 
 interface IReviewController {
     getHello(): string
 
     create(reviewData: ReviewCreateDto): Promise<ReviewEntity>
 
-    getAll(): Promise<ReviewEntity[]>
+    getAll(option: ReviewGetAllDto): Promise<ReviewEntity[]>
 
     getLatest(): Promise<ReviewEntity[]>
+
+    getOne(id: number): Promise<ReviewEntity>
 
     delete(id: number): Promise<void>
 
@@ -27,8 +30,18 @@ export class ReviewController implements IReviewController{
     ) {}
 
     @Get()
-    getAll(): Promise<ReviewEntity[]> {
-        return this.reviewService.getAll()
+    getHello(): string {
+        return this.reviewService.getHello()
+    }
+
+    @Get('/all')
+    getAll(@Query() options: ReviewGetAllDto): Promise<ReviewEntity[]> {
+        return this.reviewService.getAll(options);
+    }
+
+    @Get('/:id')
+    getOne(@Param('id', ParseIntPipe) id: number): Promise<ReviewEntity> {
+        return this.reviewService.getOne(id)
     }
 
     @Get('/latest')
@@ -41,6 +54,12 @@ export class ReviewController implements IReviewController{
         return this.reviewService.create(reviewData)
     }
 
+    @Post('/toggle-like')
+    toggleLike(@Body() data: ToggleLikeDto): Promise<void> {
+        const { userId, reviewId } = data;
+        return this.reviewService.toggleLike(userId, reviewId)
+    }
+
     @Delete(':id')
     async delete(@Param('id') id: number): Promise<void> {
         await this.reviewService.delete(id)
@@ -51,14 +70,4 @@ export class ReviewController implements IReviewController{
         await this.reviewService.update(id, reviewData)
     }
 
-    @Post('/toggle-like')
-    toggleLike(@Body() data: ToggleLikeDto): Promise<void> {
-        const { userId, reviewId } = data;
-        return this.reviewService.toggleLike(userId, reviewId)
-    }
-
-    @Get()
-    getHello(): string {
-        return this.reviewService.getHello()
-    }
 }

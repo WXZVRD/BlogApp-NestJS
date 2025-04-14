@@ -2,6 +2,7 @@ import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {UserRoles} from "../../../shared/enums/user/userRole.enum";
 import {AuthProviders} from "../../../shared/enums/auth/authProvider";
 import {ReviewEntity} from "../../review/entity/review.entity";
+import {CommentEntity} from "../../comment/entity/comment.entity";
 
 
 @Entity("users")
@@ -60,4 +61,7 @@ export class UserEntity {
 
     @OneToMany(() => ReviewEntity, review => review.user)
     reviews: ReviewEntity
+
+    @OneToMany(() => CommentEntity, comments => comments.author)
+    comments: CommentEntity
 }

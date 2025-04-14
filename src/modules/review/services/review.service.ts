@@ -5,13 +5,15 @@ import {ReviewEntity} from "../entity/review.entity";
 import {UserRepository} from "../../user/user.repository";
 import {LikeService} from "./like.service";
 import {UserEntity} from "../../user/entities/user.entity";
+import {SelectQueryBuilder} from "typeorm";
+import {ReviewGetAllDto} from "../dto/review-getAll.dto";
 
 interface IReviewService{
     getHello(): string
 
     create(reviewData: ReviewCreateDto): Promise<ReviewEntity>
 
-    getAll(): Promise<ReviewEntity[]>
+    getAll(query: ReviewGetAllDto): Promise<ReviewEntity[]>
 
     getLatest(): Promise<ReviewEntity[]>
 
@@ -73,8 +75,8 @@ export class ReviewService implements IReviewService{
         return this.likeService.toggleLike(user, review)
     }
 
-    getAll(): Promise<ReviewEntity[]> {
-        return this.reviewRepository.getAll()
+    getAll(query: ReviewGetAllDto): Promise<ReviewEntity[]> {
+        return this.reviewRepository.getAll(query)
     }
 
     getLatest(): Promise<ReviewEntity[]> {

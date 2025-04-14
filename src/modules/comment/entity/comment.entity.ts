@@ -2,21 +2,25 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn,
+    JoinColumn, ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import {UserEntity} from "../../user/entities/user.entity";
+import {ReviewEntity} from "../../review/entity/review.entity";
 
 @Entity('comments')
 export class CommentEntity{
     @PrimaryGeneratedColumn()
     id: number
 
-    @OneToMany(() => UserEntity, user => user.id, { onDelete: "CASCADE"})
+    @ManyToOne(() => UserEntity, user => user.comments, { onDelete: "CASCADE" })
     @JoinColumn()
-    author: UserEntity
+    author: UserEntity;
+
+    @ManyToOne(() => ReviewEntity, review => review.comments, { onDelete: "CASCADE" })
+    review: ReviewEntity;
 
     @Column()
     content: string

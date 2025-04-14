@@ -1,10 +1,17 @@
-import {Controller, Get} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post} from "@nestjs/common";
 import {CommentService} from "./comment.service";
 import {CommentEntity} from "./entity/comment.entity";
+import {CommentCreateDto} from "./dto/comment-create.dto";
+import {DeleteResult} from "typeorm";
 
 interface ICommentController{
+    create(commentData: CommentCreateDto): Promise<CommentEntity>
 
     getAll(): Promise<CommentEntity[]>
+
+    deleteAll(): Promise<void>
+
+    deleteOne(id: number): Promise<DeleteResult>
 }
 
 @Controller('comment')
@@ -13,8 +20,23 @@ export class CommentController implements ICommentController{
         private readonly commentService: CommentService
     ) {}
 
+    @Post('/create')
+    create(@Body() commentData: CommentCreateDto): Promise<CommentEntity> {
+        return this.commentService.create(commentData)
+    }
+
     @Get()
     getAll(): Promise<CommentEntity[]> {
         return this.commentService.getAll()
+    }
+
+    @Delete('/all')
+    deleteAll(): Promise<void> {
+        return this.commentService.deleteAll()
+    }
+
+    @Delete(':id')
+    deleteOne(@Param() id: number): Promise<DeleteResult> {
+        return this.commentService.deleteOne(id)
     }
 }

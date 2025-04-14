@@ -17,7 +17,7 @@ export class LikeEntity {
     @JoinColumn({ name: 'userId' })
     user: UserEntity;
 
-    @ManyToOne(() => ReviewEntity, { onDelete: 'CASCADE' })
+    @ManyToOne(() => ReviewEntity, review => review.likes,{ onDelete: 'CASCADE' })
     @JoinColumn({ name: 'reviewId' })
     review: ReviewEntity;
 
