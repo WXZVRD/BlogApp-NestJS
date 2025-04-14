@@ -1,7 +1,8 @@
-import {Body, Controller, Delete, Get, Param, Post, Put} from "@nestjs/common";
-import {ReviewService} from "./review.service";
+import {Body, Controller, Delete, Get, Param, Post, Put, Req} from "@nestjs/common";
+import {ReviewService} from "./services/review.service";
 import {ReviewEntity} from "./entity/review.entity";
 import {ReviewCreateDto} from "./dto/review-create.dto";
+import {ToggleLikeDto} from "./dto/toggle-like.dto";
 
 interface IReviewController {
     getHello(): string
@@ -10,21 +11,29 @@ interface IReviewController {
 
     getAll(): Promise<ReviewEntity[]>
 
+    getLatest(): Promise<ReviewEntity[]>
+
     delete(id: number): Promise<void>
 
     update(id: number, reviewData: Partial<ReviewEntity>): Promise<void>
+
+    toggleLike(data: ToggleLikeDto): Promise<void>
 }
 
 @Controller('/review')
 export class ReviewController implements IReviewController{
     constructor(
-        private readonly reviewService: ReviewService
-    ) {
-    }
+        private readonly reviewService: ReviewService,
+    ) {}
 
     @Get()
     getAll(): Promise<ReviewEntity[]> {
         return this.reviewService.getAll()
+    }
+
+    @Get('/latest')
+    getLatest(): Promise<ReviewEntity[]> {
+        return this.reviewService.getLatest()
     }
 
     @Post('/create')
@@ -40,6 +49,12 @@ export class ReviewController implements IReviewController{
     @Put(':id')
     async update(@Param('id') id: number, @Body() reviewData: Partial<ReviewEntity>): Promise<void> {
         await this.reviewService.update(id, reviewData)
+    }
+
+    @Post('/toggle-like')
+    toggleLike(@Body() data: ToggleLikeDto): Promise<void> {
+        const { userId, reviewId } = data;
+        return this.reviewService.toggleLike(userId, reviewId)
     }
 
     @Get()
