@@ -1,5 +1,15 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 import { UserEntity } from "../../user/entities/user.entity";
+import {LikeEntity} from "./like.entity";
 
 @Entity('reviews')
 export class ReviewEntity {
@@ -7,8 +17,10 @@ export class ReviewEntity {
     id: number;
 
     @ManyToOne(() => UserEntity, user => user.reviews, { onDelete: "CASCADE" })
-    @JoinColumn()
     user: UserEntity;
+
+    @OneToMany(() => LikeEntity, like => like.review, { cascade: true })
+    likes: LikeEntity[];
 
     @Column()
     content: string;
