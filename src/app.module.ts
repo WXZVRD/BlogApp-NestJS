@@ -7,6 +7,7 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 import {typeOrmConfig} from "./config/database.config";
 import {AuthModule} from "./modules/auth/auth.module";
 import {ReviewModule} from "./modules/review/review.module";
+import {CommentModule} from "./modules/comment/comment.module";
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import {ReviewModule} from "./modules/review/review.module";
       TypeOrmModule.forRoot(typeOrmConfig),
       UserModule,
       AuthModule,
-      ReviewModule
+      ReviewModule,
+      CommentModule
   ],
   controllers: [AppController],
   providers: [AppService],
