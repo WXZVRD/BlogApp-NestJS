@@ -17,6 +17,8 @@ interface IReviewService{
 
     getLatest(): Promise<ReviewEntity[]>
 
+    getMostRated(): Promise<ReviewEntity[]>
+
     getOne(id: number): Promise<ReviewEntity>
 
     delete(id: number): Promise<void>
@@ -81,6 +83,10 @@ export class ReviewService implements IReviewService{
 
     getLatest(): Promise<ReviewEntity[]> {
         return this.reviewRepository.getLatest()
+    }
+
+    getMostRated(): Promise<ReviewEntity[]> {
+        return this.reviewRepository.getMostRated()
     }
 
     async getOne(id: number): Promise<ReviewEntity> {

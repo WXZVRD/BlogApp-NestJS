@@ -36,12 +36,6 @@ export class ReviewRepository {
             .leftJoinAndSelect('review.comments', 'comments')
             .leftJoinAndSelect('review.likes', 'likes')
             .getOne()
-        /*return await this.reviewRepository.findOne({
-            where: {
-                id: id
-            },
-            relations: ['comments']
-        })*/
     }
 
     async getAll(query: ReviewGetAllDto): Promise<ReviewEntity[]> {
@@ -77,6 +71,13 @@ export class ReviewRepository {
             order: {
                 createdAt: 'DESC'
             }
+        })
+    }
+
+    getMostRated(): Promise<ReviewEntity[]> {
+        return this.reviewRepository.find({
+            take: 10,
+            order: { averageRating: "DESC"}
         })
     }
 
