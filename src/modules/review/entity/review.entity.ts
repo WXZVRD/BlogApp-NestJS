@@ -29,6 +29,12 @@ export class ReviewEntity {
     @Column()
     content: string;
 
+    @Column({ type: "float", default: 0 })
+    averageRating: number
+
+    @Column({ default: 0 })
+    ratingCount: number
+
     @CreateDateColumn()
     createdAt: Date;
 

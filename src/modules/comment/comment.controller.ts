@@ -9,6 +9,8 @@ interface ICommentController{
 
     getAll(): Promise<CommentEntity[]>
 
+    getByReview(reviewId: number): Promise<CommentEntity[]>
+
     deleteAll(): Promise<void>
 
     deleteOne(id: number): Promise<DeleteResult>
@@ -28,6 +30,11 @@ export class CommentController implements ICommentController{
     @Get()
     getAll(): Promise<CommentEntity[]> {
         return this.commentService.getAll()
+    }
+
+    @Get('/:reviewId')
+    getByReview(@Param('reviewId', ParseIntPipe) reviewId: number): Promise<CommentEntity[]> {
+        return this.commentService.getByReview(reviewId)
     }
 
     @Delete('/all')

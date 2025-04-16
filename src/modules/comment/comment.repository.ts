@@ -33,6 +33,17 @@ export class CommentRepository{
         })
     }
 
+    async getByReview(reviewId: number): Promise<CommentEntity[] | null> {
+        return this.commentRepository.find({
+            where: { review: { id: reviewId} },
+            relations: ['author']
+        });
+    }
+
+    getById(id: number): Promise<CommentEntity | null> {
+        return this.commentRepository.findOneBy({ id })
+    }
+
     delete(id: number) {
         return this.commentRepository.delete(id)
     }

@@ -5,9 +5,12 @@ import {UserRepository} from "../user/user.repository";
 import {CommentCreateDto} from "./dto/comment-create.dto";
 import {ReviewRepository} from "../review/repository/review.repository";
 import {DeleteResult} from "typeorm";
+import {ReviewEntity} from "../review/entity/review.entity";
 
 interface ICommentService {
     getAll(): Promise<CommentEntity[]>
+
+    getByReview(reviewId: number): Promise<CommentEntity[]>
 
     create(commentData: CommentCreateDto): Promise<CommentEntity>
 
@@ -43,6 +46,15 @@ export class CommentService implements ICommentService{
 
     getAll(): Promise<CommentEntity[]> {
         return this.commentRepository.findAll()
+    }
+
+    async getByReview(reviewId: number): Promise<CommentEntity[]> {
+        const comments: CommentEntity[] | null = await this.commentRepository.getByReview(reviewId)
+        if (!comments) {
+            throw new NotFoundException("Comment to this review doesnt exist")
+        }
+
+        return comments
     }
 
     deleteOne(id: number): Promise<DeleteResult> {
