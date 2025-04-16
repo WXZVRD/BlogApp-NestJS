@@ -14,6 +14,8 @@ interface IReviewController {
 
     getLatest(): Promise<ReviewEntity[]>
 
+    getMostRated(): Promise<ReviewEntity[]>
+
     getOne(id: number): Promise<ReviewEntity>
 
     delete(id: number): Promise<void>
@@ -39,7 +41,7 @@ export class ReviewController implements IReviewController{
         return this.reviewService.getAll(options);
     }
 
-    @Get('/:id')
+    @Get('/screen/:id')
     getOne(@Param('id', ParseIntPipe) id: number): Promise<ReviewEntity> {
         return this.reviewService.getOne(id)
     }
@@ -47,6 +49,11 @@ export class ReviewController implements IReviewController{
     @Get('/latest')
     getLatest(): Promise<ReviewEntity[]> {
         return this.reviewService.getLatest()
+    }
+
+    @Get('/most-rated')
+    getMostRated(): Promise<ReviewEntity[]> {
+        return this.reviewService.getMostRated()
     }
 
     @Post('/create')
