@@ -9,16 +9,19 @@ import {AuthModule} from "./modules/auth/auth.module";
 import {ReviewModule} from "./modules/review/review.module";
 import {CommentModule} from "./modules/comment/comment.module";
 import {RatingModule} from "./modules/rating/rating.module";
+import {WorkModule} from "./modules/work/work.module";
+import {HttpService} from "@nestjs/axios";
 
 @Module({
   imports: [
-      ConfigModule.forRoot(),
+      ConfigModule.forRoot({isGlobal: true}),
       TypeOrmModule.forRoot(typeOrmConfig),
       UserModule,
       AuthModule,
       ReviewModule,
       CommentModule,
-      RatingModule
+      RatingModule,
+      WorkModule,
   ],
   controllers: [AppController],
   providers: [AppService],
