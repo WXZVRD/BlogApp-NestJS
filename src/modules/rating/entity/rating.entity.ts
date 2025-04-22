@@ -1,5 +1,5 @@
 import {Column, Entity, PrimaryGeneratedColumn} from "typeorm";
-import {RateTargetTypes} from "../rating.enum";
+import {RateTargetTypes} from "../types/rating.enum";
 
 
 @Entity('ratings')
@@ -13,8 +13,8 @@ export class RatingEntity{
     @Column({ type: "float", default: 0 })
     value: number
 
-    @Column()
-    targetType: RateTargetTypes
+    @Column({ type: 'enum', enum: RateTargetTypes })
+    targetType: RateTargetTypes;
 
     @Column()
     targetId: number;
