@@ -51,6 +51,8 @@ export class ReviewRepository {
             .select([
                 'review.id',
                 'review.content',
+                'review.averageRating',
+                'review.ratingCount',
                 'review.createdAt',
                 'review.updatedAt',
                 'like.id',
@@ -83,5 +85,12 @@ export class ReviewRepository {
 
     async save(reviewToSave: ReviewEntity ) {
         return await this.reviewRepository.save(reviewToSave)
+    }
+
+    async updateRating(reviewId: number, avgRating: number, ratingCount: number) {
+        await this.reviewRepository.update(reviewId, {
+            averageRating: avgRating,
+            ratingCount: ratingCount
+        })
     }
 }
