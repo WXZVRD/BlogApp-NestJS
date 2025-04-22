@@ -10,6 +10,7 @@ import {ReviewModule} from "./modules/review/review.module";
 import {CommentModule} from "./modules/comment/comment.module";
 import {RatingModule} from "./modules/rating/rating.module";
 import {WorkModule} from "./modules/work/work.module";
+import {UploadModule} from "./modules/uploader/upload.module";
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import {WorkModule} from "./modules/work/work.module";
       CommentModule,
       RatingModule,
       WorkModule,
+      UploadModule
   ],
   controllers: [AppController],
   providers: [AppService],
