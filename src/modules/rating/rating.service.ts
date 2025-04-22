@@ -1,75 +1,97 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
-import {ReviewRepository} from "../review/repository/review.repository";
-import {RatingRepository} from "./rating.repository";
-import {RatingEntity} from "./entity/rating.entity";
-import {ReviewEntity} from "../review/entity/review.entity";
-import {RateTargetTypes} from "./rating.enum";
-
-interface IRatingService {
-    rate(userId: number, targetType: 'work' | 'review', targetId: number, newValue: number)
-
-    delete(userId: number, targetType: 'work' | 'review', targetId: number)
-}
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ReviewRepository } from "../review/repository/review.repository";
+import { RatingRepository } from "./repository/rating.repository";
+import { RatingEntity } from "./entity/rating.entity";
+import { WorkRepository } from "../work/repository/work.repository";
+import {
+    RateTargetRepository,
+    RateTargetType
+} from "./types/rating-target.map";
+import { RateTargetTypes } from "./types/rating.enum";
 
 @Injectable()
-export class RatingService implements IRatingService{
+export class RatingService {
+    private readonly logger = new Logger(RatingService.name);
+
     constructor(
         private ratingRepository: RatingRepository,
         private reviewRepository: ReviewRepository,
+        private workRepository: WorkRepository,
     ) {}
 
-    private getTargetRepo(targetType: RateTargetTypes): ReviewRepository {
+    async rate<T extends RateTargetType>(
+        userId: number,
+        targetId: number,
+        targetType: T,
+        value: number
+    ): Promise<void> {
+        this.logger.debug(`rate() called with userId=${userId}, targetId=${targetId}, targetType=${targetType}, value=${value}`);
+        await this.updateRating(userId, targetId, targetType, value);
+        await this.calculateAverageRating(targetId, targetType);
+    }
+
+    private getTargetRepo<T extends RateTargetType>(targetType: T): RateTargetRepository<T> {
+        this.logger.debug(`getTargetRepo() for targetType=${targetType}`);
         switch (targetType) {
-            case RateTargetTypes.REVIEW: return this.reviewRepository;
-            case RateTargetTypes.WORK: return this.reviewRepository;
-            default: throw new NotFoundException('Unknown target type');
+            case RateTargetTypes.REVIEW:
+                return this.reviewRepository as RateTargetRepository<T>;
+            case RateTargetTypes.WORK:
+                return this.workRepository as RateTargetRepository<T>;
+            default:
+                this.logger.error(`Unknown targetType=${targetType}`);
+                throw new NotFoundException('Unknown target type');
         }
     }
 
-    async rate(userId: number, targetType: RateTargetTypes, targetId: number, newValue: number) {
-        const repo: ReviewRepository = this.getTargetRepo(targetType);
-        const target: ReviewEntity | null = await repo.findById(targetId);
-        if (!target) throw new NotFoundException(`${targetType} not found`);
+    private async updateRating<T extends RateTargetType>(
+        userId: number,
+        targetId: number,
+        targetType: T,
+        value: number
+    ): Promise<RatingEntity> {
+        this.logger.debug(`updateRating() - Checking existing rating for userId=${userId}, targetId=${targetId}, targetType=${targetType}`);
+        const existing = await this.ratingRepository.findByUserAndTarget({ userId, targetId, targetType });
 
-        const existing: RatingEntity | null = await this.ratingRepository.findByUserAndTarget(userId, targetType, targetId);
-
-        if (!existing) {
-            const rating: RatingEntity = await this.ratingRepository.createRating(userId, targetType, targetId, newValue);
-            await this.ratingRepository.save(rating)
-
-            target.averageRating = (target.averageRating * target.ratingCount + newValue) / (target.ratingCount + 1);
-            target.ratingCount += 1;
-        } else {
-            const oldValue = existing.value;
-            existing.value = newValue;
-            await this.ratingRepository.save(existing);
-
-            target.averageRating = (target.averageRating * target.ratingCount - oldValue + newValue) / target.ratingCount;
+        if (existing) {
+            this.logger.debug(`updateRating() - Found existing rating. Updating value to ${value}`);
+            existing.value = value;
+            const updated = await this.ratingRepository.save(existing);
+            this.logger.debug(`updateRating() - Saved updated rating: ${JSON.stringify(updated)}`);
+            return updated;
         }
 
-        await repo.save(target);
-        return target;
+        this.logger.debug(`updateRating() - No existing rating found. Creating new rating`);
+        const newRating = await this.ratingRepository.create(userId, targetType, targetId, value);
+        this.logger.debug(`updateRating() - Created new rating object: ${JSON.stringify(newRating)}`);
+        console.log(newRating)
+        const saved = await this.ratingRepository.save(newRating);
+        this.logger.debug(`updateRating() - Saved new rating: ${JSON.stringify(saved)}`);
+        return saved;
     }
 
-    async delete(userId: number, targetType: RateTargetTypes, targetId: number) {
-        const rating: RatingEntity | null = await this.ratingRepository.findByUserAndTarget(userId, targetType, targetId);
-        if (!rating) return;
+    private async calculateAverageRating<T extends RateTargetType>(
+        targetId: number,
+        targetType: T
+    ): Promise<{ averageRating: number, ratingCount: number }> {
+        this.logger.debug(`calculateAverageRating() - Calculating average for targetId=${targetId}, targetType=${targetType}`);
+        const ratings = await this.ratingRepository.findAllByTarget(targetId, targetType);
 
-        const repo = this.getTargetRepo(targetType);
-        const target = await repo.findById(targetId);
-        if (!target) return;
-
-        const oldValue = rating.value;
-        await this.ratingRepository.deleteRating(rating);
-
-        if (target.ratingCount <= 1) {
-            target.averageRating = 0;
-            target.ratingCount = 0;
-        } else {
-            target.averageRating = (target.averageRating * target.ratingCount - oldValue) / (target.ratingCount - 1);
-            target.ratingCount -= 1;
+        if (!ratings || ratings.length === 0) {
+            this.logger.warn(`calculateAverageRating() - No ratings found for targetId=${targetId}, targetType=${targetType}`);
+            throw new NotFoundException("No ratings to this target");
         }
 
-        await repo.save(target);
+        const ratingCount = ratings.length;
+        const sum = ratings.reduce((acc, curr) => acc + curr.value, 0);
+        const averageRating = ratingCount > 0 ? sum / ratingCount : 0;
+
+        this.logger.debug(`calculateAverageRating() - Computed average=${averageRating}, count=${ratingCount}`);
+
+        const repo: RateTargetRepository<RateTargetType> = this.getTargetRepo(targetType);
+        await repo.updateRating(targetId, averageRating, ratingCount);
+
+        this.logger.debug(`calculateAverageRating() - Updated target entity with new average and count`);
+
+        return { averageRating, ratingCount };
     }
 }

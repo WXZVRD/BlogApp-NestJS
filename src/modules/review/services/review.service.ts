@@ -7,6 +7,10 @@ import {LikeService} from "./like.service";
 import {UserEntity} from "../../user/entities/user.entity";
 import {SelectQueryBuilder} from "typeorm";
 import {ReviewGetAllDto} from "../dto/review-getAll.dto";
+import {WorkService} from "../../work/services/work.service";
+import {RatingService} from "../../rating/rating.service";
+import {RateTargetTypes} from "../../rating/types/rating.enum";
+import {workerData} from "worker_threads";
 
 interface IReviewService{
     getHello(): string
@@ -35,6 +39,8 @@ export class ReviewService implements IReviewService{
         private readonly userRepository: UserRepository,
 
         private readonly likeService: LikeService,
+        private readonly workService: WorkService,
+        private readonly ratingService: RatingService
     ) {
     }
 
@@ -47,6 +53,8 @@ export class ReviewService implements IReviewService{
         const createdReview = this.reviewRepository.create(reviewData, author)
 
         const savedReview = await this.reviewRepository.save(createdReview)
+
+        await this.ratingService.rate(author.id, reviewData.workData.id, RateTargetTypes.WORK, reviewData.workData.rating);
 
         return savedReview
     }

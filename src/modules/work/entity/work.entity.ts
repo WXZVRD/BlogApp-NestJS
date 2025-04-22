@@ -11,7 +11,7 @@ export class WorkEntity{
     title: string
 
     @Column({ nullable: true })
-    avatar: string
+    cover: string
 
     @Column({
         type: "enum",
