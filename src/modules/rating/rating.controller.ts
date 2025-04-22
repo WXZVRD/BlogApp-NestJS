@@ -1,23 +1,25 @@
 import {Body, Controller, Post} from "@nestjs/common";
 import {RatingService} from "./rating.service";
-import {MakeRateDto} from "./make-rate.dto";
-import {ReviewEntity} from "../review/entity/review.entity";
+import {CreateRateDto} from "./dto/make-rate.dto";
+import {RateTargetTypes} from "./types/rating.enum";
 
-interface IRatingController{
-    putRating(data: MakeRateDto): Promise<ReviewEntity>
-}
 
-@Controller('/rating')
-export class RatingController implements IRatingController{
+@Controller('rating')
+export class RatingController{
     constructor(
         private readonly ratingService: RatingService
     ) {
     }
 
-    @Post('/put')
-    async putRating(@Body() data: MakeRateDto): Promise<ReviewEntity> {
-        console.log("DATA CONTROLLER: ", data)
-        return await this.ratingService.rate(data.userId, data.targetType, data.targetId, data.newValue)
+    @Post('rate-review')
+    async rateReview(
+        @Body() ratingDto: CreateRateDto,
+    ) {
+        await this.ratingService.rate(
+            ratingDto.userId,
+            ratingDto.targetId,
+            RateTargetTypes.REVIEW,
+            ratingDto.value
+        );
     }
-
 }
