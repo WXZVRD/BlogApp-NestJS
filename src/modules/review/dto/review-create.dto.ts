@@ -1,4 +1,5 @@
 import {IsNotEmpty} from "class-validator";
+import {IWorkFormData} from "../../work/types/work.types";
 
 
 export class ReviewCreateDto{
@@ -7,4 +8,7 @@ export class ReviewCreateDto{
 
     @IsNotEmpty()
     authorId: number
+
+    @IsNotEmpty()
+    workData: IWorkFormData
 }

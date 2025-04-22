@@ -1,7 +1,7 @@
 import {IsNotEmpty, IsNumber} from "class-validator";
-import {RateTargetTypes} from "./rating.enum";
+import {RateTargetTypes} from "../types/rating.enum";
 
-export class MakeRateDto{
+export class CreateRateDto{
     @IsNotEmpty()
     @IsNumber()
     userId: number
@@ -15,5 +15,5 @@ export class MakeRateDto{
 
     @IsNotEmpty()
     @IsNumber()
-    newValue: number
+    value: number
 }
