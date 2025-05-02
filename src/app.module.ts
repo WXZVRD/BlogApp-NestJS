@@ -11,6 +11,7 @@ import {CommentModule} from "./modules/comment/comment.module";
 import {RatingModule} from "./modules/rating/rating.module";
 import {WorkModule} from "./modules/work/work.module";
 import {UploadModule} from "./modules/uploader/upload.module";
+import {CloudinaryModule} from "./modules/cloudinary/cloudinary.module";
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import {UploadModule} from "./modules/uploader/upload.module";
       CommentModule,
       RatingModule,
       WorkModule,
-      UploadModule
+      UploadModule,
+      CloudinaryModule
   ],
   controllers: [AppController],
   providers: [AppService],
