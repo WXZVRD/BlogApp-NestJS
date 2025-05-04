@@ -6,6 +6,8 @@ import {UserEntity} from "../user/entities/user.entity";
 import {LoginDto} from "./dto/login.dto";
 import {JwtService} from "@nestjs/jwt";
 import {IServerAuthResponse} from "./types/serverResponse";
+import {Profile} from "passport-github";
+import {AuthProviders} from "../../shared/enums/auth/authProvider";
 
 interface IAuthService {
     getHello(): string
@@ -52,6 +54,19 @@ export class AuthService implements IAuthService{
         }
     }
 
+    async registerByGithub(profile: Profile) {
+        const createdUser = this.userRepository.createByProvider(profile, AuthProviders.GITHUB)
+        const savedUser = await this.userRepository.save(createdUser)
+
+        const { accessToken, refreshToken } = await this.generateJwtTokens(savedUser)
+
+        return {
+            user: savedUser,
+            accessToken,
+            refreshToken
+        }
+    }
+
     async login(logDto: LoginDto): Promise<IServerAuthResponse> {
         const existingUser = await this.userRepository.findByEmail(logDto.email)
         if (!existingUser) {
@@ -66,11 +81,6 @@ export class AuthService implements IAuthService{
             refreshToken
         }
     }
-
-
-
-
-
 
     async generateJwtTokens(user: UserEntity): Promise<{ accessToken: string; refreshToken: string }> {
         const payload = { email: user.email, sub: user.id };
