@@ -57,7 +57,7 @@ export class UserEntity {
     provider: AuthProviders
 
     @Column({ nullable: true})
-    provider_id: string
+    provider_id: number
 
     @OneToMany(() => ReviewEntity, review => review.user)
     reviews: ReviewEntity
