@@ -12,6 +12,7 @@ import {RatingModule} from "./modules/rating/rating.module";
 import {WorkModule} from "./modules/work/work.module";
 import {UploadModule} from "./modules/uploader/upload.module";
 import {CloudinaryModule} from "./modules/cloudinary/cloudinary.module";
+import {SearchModule} from "./modules/search/search.module";
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import {CloudinaryModule} from "./modules/cloudinary/cloudinary.module";
       RatingModule,
       WorkModule,
       UploadModule,
-      CloudinaryModule
+      CloudinaryModule,
+      SearchModule
   ],
   controllers: [AppController],
   providers: [AppService],
