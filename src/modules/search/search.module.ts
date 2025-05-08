@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
-import {ConfigModule, ConfigService} from '@nestjs/config';
 import { SearchController } from './search.controller';
-import { SearchService } from './search.service';
+import { SearchService } from './services/search.service';
+import {ElasticModule} from "../elastic/elastic.module";
 
 @Module({
-    imports: [
-        ConfigModule
-    ],
+    imports: [ElasticModule],
     controllers: [SearchController],
-    providers: [SearchService, ConfigService],
+    providers: [SearchService],
     exports: [SearchService]
 })
 export class SearchModule {}
