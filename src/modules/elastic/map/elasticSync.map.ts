@@ -4,10 +4,8 @@ export const ESSyncMap: ITypedSyncMap = [
     {
         tableName: 'review',
         fields: [
-            {
-                name: 'title',
-                type: 'string'
-            }
-        ]
-    }
-]
+            { name: 'title', type: 'text' },
+            { name: 'cover', type: 'keyword' },
+        ],
+    },
+];

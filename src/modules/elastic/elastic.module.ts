@@ -1,7 +1,8 @@
-import {Module} from "@nestjs/common";
+import {Logger, Module} from "@nestjs/common";
 import {ElasticProvider} from "./provider/elastic.provider";
 import {ElasticHealthService} from "./service/elasticHealth.service";
 import {ElasticSyncService} from "./service/elasticSync.service";
+import {ElasticSyncMapProvider} from "./provider/elasticSyncMap.provider";
 
 
 @Module({
@@ -9,7 +10,8 @@ import {ElasticSyncService} from "./service/elasticSync.service";
     providers: [
         ElasticProvider,
         ElasticHealthService,
-        ElasticSyncService
+        ElasticSyncService,
+        ElasticSyncMapProvider
     ],
     exports: [ElasticProvider]
 })
