@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import {ConsoleLogger, ValidationPipe} from "@nestjs/common";
-import {SearchService} from "./modules/search/search.service";
+import {SearchService} from "./modules/search/services/search.service";
+import {ElasticHealthService} from "./modules/elastic/service/elasticHealth.service";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -15,11 +16,6 @@ async function bootstrap() {
     whitelist: true,
     forbidNonWhitelisted: true,
   }));
-
-  setTimeout(async () => {
-    const esService = app.get(SearchService)
-    await esService.ping()
-  }, 1000)
 
   await app.listen(process.env.PORT ?? 3000);
 }

@@ -13,6 +13,7 @@ import {WorkModule} from "./modules/work/work.module";
 import {UploadModule} from "./modules/uploader/upload.module";
 import {CloudinaryModule} from "./modules/cloudinary/cloudinary.module";
 import {SearchModule} from "./modules/search/search.module";
+import {ElasticModule} from "./modules/elastic/elastic.module";
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import {SearchModule} from "./modules/search/search.module";
       WorkModule,
       UploadModule,
       CloudinaryModule,
-      SearchModule
+      SearchModule,
+      ElasticModule
   ],
   controllers: [AppController],
   providers: [AppService],
