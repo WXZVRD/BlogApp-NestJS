@@ -6,12 +6,14 @@ import {TypeOrmModule} from "@nestjs/typeorm";
 import {CommentEntity} from "./entity/comment.entity";
 import {UserModule} from "../user/user.module";
 import {ReviewModule} from "../review/review.module";
+import {AuthModule} from "../auth/auth.module";
 
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([CommentEntity]),
         UserModule,
+        AuthModule,
         ReviewModule
     ],
     controllers: [CommentController],

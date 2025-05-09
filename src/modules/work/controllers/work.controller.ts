@@ -1,6 +1,7 @@
-import {Controller, Get, Query} from "@nestjs/common";
+import {Controller, Get, Query, UseGuards} from "@nestjs/common";
 import {WorkService} from "../services/work.service";
 import {WorkTypeEnum} from "../types/work.enum";
+import {AuthGuard} from "../../auth/guards/auth.guard";
 
 interface IWorkController {
     getList(type: WorkTypeEnum, query: string): any
@@ -14,11 +15,11 @@ export class WorkController implements IWorkController{
     }
 
     @Get()
+    @UseGuards(AuthGuard)
     getList(
         @Query('type') type: WorkTypeEnum,
         @Query('query') query: string
     ): any {
         return this.workService.search(type, query)
     }
-
 }

@@ -8,12 +8,14 @@ import {BookApiService} from "./services/bookApi.service";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {WorkEntity} from "./entity/work.entity";
 import {WorkRepository} from "./repository/work.repository";
+import {AuthModule} from "../auth/auth.module";
 
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([WorkEntity]),
-        HttpModule
+        HttpModule,
+        AuthModule
     ],
     controllers: [WorkController],
     providers: [WorkService, GameApiService, FilmApiService, BookApiService, WorkRepository],

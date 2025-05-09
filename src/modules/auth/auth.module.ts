@@ -20,6 +20,7 @@ import {GithubOauthStrategy} from "./strategy/github.strategy";
         })
     ],
     controllers: [AuthController],
-    providers: [AuthService, GithubOAuthGuard, GithubOauthStrategy]
+    providers: [AuthService, GithubOAuthGuard, GithubOauthStrategy],
+    exports: [JwtModule]
 })
 export class AuthModule{}

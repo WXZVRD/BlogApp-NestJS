@@ -1,9 +1,10 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards} from "@nestjs/common";
 import {ReviewService} from "./services/review.service";
 import {ReviewEntity} from "./entity/review.entity";
 import {ReviewCreateDto} from "./dto/review-create.dto";
 import {ToggleLikeDto} from "./dto/toggle-like.dto";
 import {ReviewGetAllDto} from "./dto/review-getAll.dto";
+import {AuthGuard} from "../auth/guards/auth.guard";
 
 interface IReviewController {
     getHello(): string
@@ -62,19 +63,21 @@ export class ReviewController implements IReviewController{
     }
 
     @Post('/toggle-like')
+    @UseGuards(AuthGuard)
     toggleLike(@Body() data: ToggleLikeDto): Promise<void> {
         const { userId, reviewId } = data;
         return this.reviewService.toggleLike(userId, reviewId)
     }
 
     @Delete(':id')
+    @UseGuards(AuthGuard)
     async delete(@Param('id') id: number): Promise<void> {
         await this.reviewService.delete(id)
     }
 
     @Put(':id')
+    @UseGuards(AuthGuard)
     async update(@Param('id') id: number, @Body() reviewData: Partial<ReviewEntity>): Promise<void> {
         await this.reviewService.update(id, reviewData)
     }
-
 }
