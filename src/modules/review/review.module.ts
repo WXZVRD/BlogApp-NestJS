@@ -10,12 +10,14 @@ import {LikeService} from "./services/like.service";
 import {LikeEntity} from "./entity/like.entity";
 import {WorkModule} from "../work/work.module";
 import {RatingModule} from "../rating/rating.module";
+import {ElasticModule} from "../elastic/elastic.module";
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([ReviewEntity, LikeEntity]),
         UserModule,
         WorkModule,
+        ElasticModule,
         forwardRef(() => RatingModule),
     ],
     controllers: [ReviewController],
