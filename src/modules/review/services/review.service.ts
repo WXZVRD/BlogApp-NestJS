@@ -11,6 +11,7 @@ import {WorkService} from "../../work/services/work.service";
 import {RatingService} from "../../rating/rating.service";
 import {RateTargetTypes} from "../../rating/types/rating.enum";
 import {workerData} from "worker_threads";
+import {ElasticCRUDService} from "../../elastic/service/elasticCRUD.service";
 
 interface IReviewService{
     getHello(): string
@@ -40,7 +41,9 @@ export class ReviewService implements IReviewService{
 
         private readonly likeService: LikeService,
         private readonly workService: WorkService,
-        private readonly ratingService: RatingService
+        private readonly ratingService: RatingService,
+
+        private readonly elasticCRUDService: ElasticCRUDService
     ) {
     }
 
@@ -54,6 +57,18 @@ export class ReviewService implements IReviewService{
 
         const savedReview = await this.reviewRepository.save(createdReview)
 
+
+        const reviewDocument = {
+            cover: savedReview.cover || 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.peakpx.com%2Fen%2Fhd-wallpaper-desktop-erezp&psig=AOvVaw13AeWdf95EEFOQaDTJXzwJ&ust=1746835376703000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCNC4xISLlY0DFQAAAAAdAAAAABAE',
+            title: savedReview.title,
+        };
+
+        await this.elasticCRUDService.createDocument(
+            'review',
+            savedReview.id.toString(),
+            reviewDocument
+        )
+
         await this.ratingService.rate(author.id, reviewData.workData.id, RateTargetTypes.WORK, reviewData.workData.rating);
 
         return savedReview
@@ -61,6 +76,7 @@ export class ReviewService implements IReviewService{
 
     async delete(id: number): Promise<void> {
         await this.reviewRepository.delete(id)
+        await this.elasticCRUDService.deleteDocument('review', id.toString())
     }
 
     async update(id: number, reviewData): Promise<void> {

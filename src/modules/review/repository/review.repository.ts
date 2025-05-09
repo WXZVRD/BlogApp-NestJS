@@ -12,8 +12,11 @@ export class ReviewRepository {
         @InjectRepository(ReviewEntity)
         private readonly reviewRepository: Repository<ReviewEntity>
     ) {}
+
     create(reviewData: ReviewCreateDto, user: UserEntity): ReviewEntity {
         return this.reviewRepository.create({
+            title: reviewData.title,
+            cover: reviewData.cover,
             content: reviewData.content,
             user: user
         })

@@ -17,6 +17,12 @@ export class ReviewEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column()
+    title: string;
+
+    @Column()
+    cover: string;
+
     @ManyToOne(() => UserEntity, user => user.reviews, { onDelete: "CASCADE" })
     user: UserEntity;
 
