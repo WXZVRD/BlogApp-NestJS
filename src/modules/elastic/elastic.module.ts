@@ -3,6 +3,7 @@ import {ElasticProvider} from "./provider/elastic.provider";
 import {ElasticHealthService} from "./service/elasticHealth.service";
 import {ElasticSyncService} from "./service/elasticSync.service";
 import {ElasticSyncMapProvider} from "./provider/elasticSyncMap.provider";
+import {ElasticCRUDService} from "./service/elasticCRUD.service";
 
 
 @Module({
@@ -11,8 +12,9 @@ import {ElasticSyncMapProvider} from "./provider/elasticSyncMap.provider";
         ElasticProvider,
         ElasticHealthService,
         ElasticSyncService,
-        ElasticSyncMapProvider
+        ElasticSyncMapProvider,
+        ElasticCRUDService
     ],
-    exports: [ElasticProvider]
+    exports: [ElasticProvider, ElasticCRUDService]
 })
 export class ElasticModule{}
