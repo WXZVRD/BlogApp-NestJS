@@ -19,12 +19,11 @@ export class ElasticSyncService implements OnModuleInit {
             const exists = await this.isIndiceExist(indice.tableName);
 
             if (!exists) {
-                this.logger.log('Index "review" does not exist. Proceeding to create.');
-                await this.createIndice(indice)
+                this.logger.log(`Index "${indice.tableName}" does not exist. Proceeding to create.`);
+                await this.createIndice(indice);
+            } else {
+                this.logger.log(`Index "${indice.tableName}" already exists`);
             }
-
-            this.logger.log('Index "review" already exists');
-            return;
         }
     }
 
