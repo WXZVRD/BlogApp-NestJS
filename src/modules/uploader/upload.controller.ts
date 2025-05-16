@@ -1,12 +1,15 @@
 import {
     Controller,
     Post,
-    UploadedFile,
+    UploadedFile, UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
 import { UploadService } from './upload.service';
 import {FileInterceptor} from "@nestjs/platform-express";
 import {CloudinaryService} from "../cloudinary/cloudinary.service";
+import {AuthGuard} from "../auth/guards/auth.guard";
+import {RolesGuard} from "../auth/guards/roles.guard";
+import {Roles} from "../auth/decorator/roles.decorator";
 
 @Controller('/upload')
 export class UploadController {
@@ -16,6 +19,8 @@ export class UploadController {
     ) {}
 
     @Post()
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(['admin'])
     @UseInterceptors(FileInterceptor('file'))
     async uploadFile(@UploadedFile() file: Express.Multer.File) {
         const uploadData = await this.cloudinaryService.uploadFile(file)

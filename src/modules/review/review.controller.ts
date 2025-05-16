@@ -1,9 +1,12 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards} from "@nestjs/common";
 import {ReviewService} from "./services/review.service";
 import {ReviewEntity} from "./entity/review.entity";
 import {ReviewCreateDto} from "./dto/review-create.dto";
 import {ToggleLikeDto} from "./dto/toggle-like.dto";
 import {ReviewGetAllDto} from "./dto/review-getAll.dto";
+import {AuthGuard} from "../auth/guards/auth.guard";
+import {RolesGuard} from "../auth/guards/roles.guard";
+import {Roles} from "../auth/decorator/roles.decorator";
 
 interface IReviewController {
     getHello(): string
@@ -32,6 +35,7 @@ export class ReviewController implements IReviewController{
     ) {}
 
     @Get()
+    @UseGuards(AuthGuard)
     getHello(): string {
         return this.reviewService.getHello()
     }
@@ -57,24 +61,29 @@ export class ReviewController implements IReviewController{
     }
 
     @Post('/create')
+    @UseGuards(AuthGuard)
     create(@Body() reviewData: ReviewCreateDto): Promise<ReviewEntity> {
         return this.reviewService.create(reviewData)
     }
 
     @Post('/toggle-like')
+    @UseGuards(AuthGuard)
     toggleLike(@Body() data: ToggleLikeDto): Promise<void> {
         const { userId, reviewId } = data;
         return this.reviewService.toggleLike(userId, reviewId)
     }
 
     @Delete(':id')
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(['admin', 'user'])
     async delete(@Param('id') id: number): Promise<void> {
         await this.reviewService.delete(id)
     }
 
     @Put(':id')
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(['admin', 'user'])
     async update(@Param('id') id: number, @Body() reviewData: Partial<ReviewEntity>): Promise<void> {
         await this.reviewService.update(id, reviewData)
     }
-
 }
