@@ -1,19 +1,16 @@
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsNumber, IsOptional, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class ReviewGetAllDto {
     @IsOptional()
     @Type(() => Number)
     @IsNumber()
-    take?: number;
+    @Min(1)
+    page: number = 1;
 
     @IsOptional()
     @Type(() => Number)
     @IsNumber()
-    page?: number;
-
-    @IsOptional()
-    @Type(() => Number)
-    @IsNumber()
-    offset?: number;
+    @Min(1)
+    take: number = 10;
 }

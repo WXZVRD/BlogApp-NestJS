@@ -4,7 +4,6 @@ import {
     UploadedFile, UseGuards,
     UseInterceptors,
 } from '@nestjs/common';
-import { UploadService } from './upload.service';
 import {FileInterceptor} from "@nestjs/platform-express";
 import {CloudinaryService} from "../cloudinary/cloudinary.service";
 import {AuthGuard} from "../auth/guards/auth.guard";
@@ -14,7 +13,6 @@ import {Roles} from "../auth/decorator/roles.decorator";
 @Controller('/upload')
 export class UploadController {
     constructor(
-        private readonly uploadService: UploadService,
         private readonly cloudinaryService: CloudinaryService
     ) {}
 

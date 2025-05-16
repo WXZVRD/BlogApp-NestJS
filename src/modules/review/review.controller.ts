@@ -1,4 +1,17 @@
-import {Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards} from "@nestjs/common";
+import {
+    Body,
+    Controller,
+    Delete,
+    Get, InternalServerErrorException,
+    Logger, NotFoundException,
+    Param,
+    ParseIntPipe,
+    Post,
+    Put,
+    Query,
+    Req,
+    UseGuards
+} from "@nestjs/common";
 import {ReviewService} from "./services/review.service";
 import {ReviewEntity} from "./entity/review.entity";
 import {ReviewCreateDto} from "./dto/review-create.dto";
@@ -7,71 +20,60 @@ import {ReviewGetAllDto} from "./dto/review-getAll.dto";
 import {AuthGuard} from "../auth/guards/auth.guard";
 import {RolesGuard} from "../auth/guards/roles.guard";
 import {Roles} from "../auth/decorator/roles.decorator";
-
-interface IReviewController {
-    getHello(): string
-
-    create(reviewData: ReviewCreateDto): Promise<ReviewEntity>
-
-    getAll(option: ReviewGetAllDto): Promise<ReviewEntity[]>
-
-    getLatest(): Promise<ReviewEntity[]>
-
-    getMostRated(): Promise<ReviewEntity[]>
-
-    getOne(id: number): Promise<ReviewEntity>
-
-    delete(id: number): Promise<void>
-
-    update(id: number, reviewData: Partial<ReviewEntity>): Promise<void>
-
-    toggleLike(data: ToggleLikeDto): Promise<void>
-}
+import {CurrentUser} from "../../common/decorators/current-user.decorator";
+import {UserEntity} from "../user/entities/user.entity";
 
 @Controller('/review')
-export class ReviewController implements IReviewController{
+export class ReviewController{
     constructor(
         private readonly reviewService: ReviewService,
     ) {}
 
-    @Get()
+    @Post('/create')
     @UseGuards(AuthGuard)
-    getHello(): string {
-        return this.reviewService.getHello()
+    async create(@Body() reviewData: ReviewCreateDto): Promise<ReviewEntity> {
+        try {
+            const review = await this.reviewService.create(reviewData);
+            return review;
+        } catch (error) {
+            throw new InternalServerErrorException('Failed to create review');
+        }
     }
 
-    @Get('/all')
-    getAll(@Query() options: ReviewGetAllDto): Promise<ReviewEntity[]> {
-        return this.reviewService.getAll(options);
+    @Get('/search')
+    async search(@Query() query: ReviewGetAllDto): Promise<{ data: ReviewEntity[]; total: number }> {
+        return await this.reviewService.search(query);
     }
+
 
     @Get('/screen/:id')
-    getOne(@Param('id', ParseIntPipe) id: number): Promise<ReviewEntity> {
-        return this.reviewService.getOne(id)
+    async getOne(@Param('id', ParseIntPipe) id: number): Promise<ReviewEntity> {
+        const review = await this.reviewService.getOne(id);
+        if (!review) {
+            throw new NotFoundException(`Review with id ${id} not found`);
+        }
+        return review;
     }
 
     @Get('/latest')
     getLatest(): Promise<ReviewEntity[]> {
-        return this.reviewService.getLatest()
+        return this.reviewService.getLatest();
     }
 
     @Get('/most-rated')
     getMostRated(): Promise<ReviewEntity[]> {
-        return this.reviewService.getMostRated()
-    }
-
-    @Post('/create')
-    @UseGuards(AuthGuard)
-    create(@Body() reviewData: ReviewCreateDto): Promise<ReviewEntity> {
-        return this.reviewService.create(reviewData)
+        return this.reviewService.getMostRated();
     }
 
     @Post('/toggle-like')
     @UseGuards(AuthGuard)
-    toggleLike(@Body() data: ToggleLikeDto): Promise<void> {
-        const { userId, reviewId } = data;
-        return this.reviewService.toggleLike(userId, reviewId)
+    toggleLike(
+        @CurrentUser() user: UserEntity,
+        @Body() data: ToggleLikeDto
+    ): Promise<void> {
+        return this.reviewService.toggleLike(user.id, data.reviewId);
     }
+
 
     @Delete(':id')
     @UseGuards(AuthGuard, RolesGuard)
