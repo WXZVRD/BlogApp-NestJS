@@ -5,6 +5,8 @@ import {ReviewCreateDto} from "./dto/review-create.dto";
 import {ToggleLikeDto} from "./dto/toggle-like.dto";
 import {ReviewGetAllDto} from "./dto/review-getAll.dto";
 import {AuthGuard} from "../auth/guards/auth.guard";
+import {RolesGuard} from "../auth/guards/roles.guard";
+import {Roles} from "../auth/decorator/roles.decorator";
 
 interface IReviewController {
     getHello(): string
@@ -33,6 +35,7 @@ export class ReviewController implements IReviewController{
     ) {}
 
     @Get()
+    @UseGuards(AuthGuard)
     getHello(): string {
         return this.reviewService.getHello()
     }
@@ -58,6 +61,7 @@ export class ReviewController implements IReviewController{
     }
 
     @Post('/create')
+    @UseGuards(AuthGuard)
     create(@Body() reviewData: ReviewCreateDto): Promise<ReviewEntity> {
         return this.reviewService.create(reviewData)
     }
@@ -70,13 +74,15 @@ export class ReviewController implements IReviewController{
     }
 
     @Delete(':id')
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(['admin', 'user'])
     async delete(@Param('id') id: number): Promise<void> {
         await this.reviewService.delete(id)
     }
 
     @Put(':id')
-    @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard, RolesGuard)
+    @Roles(['admin', 'user'])
     async update(@Param('id') id: number, @Body() reviewData: Partial<ReviewEntity>): Promise<void> {
         await this.reviewService.update(id, reviewData)
     }
