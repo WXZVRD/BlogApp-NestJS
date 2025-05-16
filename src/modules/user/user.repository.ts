@@ -1,7 +1,6 @@
 import {InjectRepository} from "@nestjs/typeorm";
 import {Injectable} from "@nestjs/common";
 import {Repository} from "typeorm";
-import {RegisterDto} from "../auth/dto/register.dto";
 import {UserEntity} from "./entities/user.entity";
 import {AuthProviders} from "../../shared/enums/auth/authProvider";
 import {Profile} from "passport-github";
@@ -21,31 +20,17 @@ export class UserRepository {
         private readonly userRepository: Repository<UserEntity>
     ) {}
 
-    findByEmail(email: string) {
-        return this.userRepository.findOneBy({email})
-    }
-
-    findByProvider(provider_id: number, provider: AuthProviders) {
-        return this.userRepository.findOneBy({
-            provider_id,
-            provider
-        })
-    }
-
-    findById(id: number) {
-        return this.userRepository.findOneBy({id})
-    }
-
-    create(userData: RegisterDto) {
+    createByLocal(userData: Partial<UserEntity>): UserEntity {
         return this.userRepository.create({
             email: userData.email,
-            password_hash: userData.password,
-            first_name: userData.firstName,
-            last_name: userData.lastName,
+            password_hash: userData.password_hash,
+            first_name: userData.first_name,
+            last_name: userData.last_name,
+            avatarUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4YreOWfDX3kK-QLAbAL4ufCPc84ol2MA8Xg&s'
         })
     }
 
-    createByProvider(profile: Profile, provider: AuthProviders) {
+    createByProvider(profile: Profile, provider: AuthProviders): UserEntity {
         const profileJson = profile._json as OAuthProfileJson
 
         return this.userRepository.create({
@@ -59,5 +44,48 @@ export class UserRepository {
 
     async save(userToSave: UserEntity) {
         return await this.userRepository.save(userToSave)
+    }
+
+    async findAll(): Promise<UserEntity[] | null> {
+        return this.userRepository.find()
+    }
+
+    async findByEmail(email: string): Promise<UserEntity | null> {
+        return await this.userRepository.findOne({
+            where: { email }
+        })
+    }
+
+    async findById(id: number): Promise<UserEntity | null> {
+        return await this.userRepository.findOne({
+            where: { id }
+        })
+    }
+
+    async findByProvider(provider_id: number, provider: AuthProviders) {
+        return this.userRepository.findOneBy({
+            provider_id,
+            provider
+        })
+    }
+
+    async updateUser(id: number, updateUserDto: Partial<UserEntity>): Promise<UserEntity | null> {
+        const user = await this.userRepository.findOne({
+            where: {id}
+        });
+
+        if (!user) {
+            return null;
+        }
+
+        Object.assign(user, updateUserDto);
+
+        return await this.userRepository.save(user);
+    }
+
+    async delete(id: number): Promise<boolean> {
+        const result = await this.userRepository.delete({ id });
+
+        return result.affected !== 0;
     }
 }
