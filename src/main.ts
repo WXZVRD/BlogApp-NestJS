@@ -1,8 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import {ConsoleLogger, ValidationPipe} from "@nestjs/common";
-import {SearchService} from "./modules/search/services/search.service";
-import {ElasticHealthService} from "./modules/elastic/service/elasticHealth.service";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
