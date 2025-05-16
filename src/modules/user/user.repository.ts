@@ -5,13 +5,11 @@ import {UserEntity} from "./entities/user.entity";
 import {AuthProviders} from "../../shared/enums/auth/authProvider";
 import {Profile} from "passport-github";
 
-
 interface OAuthProfileJson {
     email: string;
     id: string;
     avatar_url?: string;
 }
-
 
 @Injectable()
 export class UserRepository {
