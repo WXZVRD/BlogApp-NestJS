@@ -38,9 +38,11 @@ export class AuthService implements IAuthService{
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(regDto.password, salt)
 
-        const createdUser = this.userRepository.create({
-            ...regDto,
-            password: hashedPassword
+        const createdUser = this.userRepository.createByLocal({
+            email: regDto.email,
+            password_hash: hashedPassword,
+            first_name: regDto.firstName,
+            last_name: regDto.lastName
         })
 
         const savedUser = await this.userRepository.save(createdUser)
