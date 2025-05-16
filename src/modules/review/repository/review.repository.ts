@@ -4,7 +4,6 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {Injectable} from "@nestjs/common";
 import {ReviewCreateDto} from "../dto/review-create.dto";
 import {UserEntity} from "../../user/entities/user.entity";
-import {ReviewGetAllDto} from "../dto/review-getAll.dto";
 
 @Injectable()
 export class ReviewRepository {
@@ -12,6 +11,16 @@ export class ReviewRepository {
         @InjectRepository(ReviewEntity)
         private readonly reviewRepository: Repository<ReviewEntity>
     ) {}
+
+    async findAndCount(skip: number, take: number): Promise<{ data: ReviewEntity[]; total: number }> {
+        const [data, total] = await this.reviewRepository.createQueryBuilder('review')
+            .orderBy('review.createdAt', 'DESC')
+            .skip(skip)
+            .take(take)
+            .getManyAndCount();
+
+        return { data, total };
+    }
 
     create(reviewData: ReviewCreateDto, user: UserEntity): ReviewEntity {
         return this.reviewRepository.create({
@@ -39,35 +48,6 @@ export class ReviewRepository {
             .leftJoinAndSelect('review.comments', 'comments')
             .leftJoinAndSelect('review.likes', 'likes')
             .getOne()
-    }
-
-    async getAll(query: ReviewGetAllDto): Promise<ReviewEntity[]> {
-        const { take = 10, page = 1, offset } = query;
-
-        const skip = offset ?? (page - 1) * take;
-
-        return this.reviewRepository
-            .createQueryBuilder('review')
-            .leftJoinAndSelect('review.likes', 'like')
-            .leftJoin('like.user', 'likeUser')
-            .leftJoin('review.user', 'author')
-            .select([
-                'review.id',
-                'review.content',
-                'review.averageRating',
-                'review.ratingCount',
-                'review.createdAt',
-                'review.updatedAt',
-                'like.id',
-                'likeUser.id',
-                'author.id',
-                'author.first_name',
-                'author.last_name',
-                'author.avatarUrl'
-            ])
-            .skip(skip)
-            .take(take)
-            .getMany();
     }
 
     getLatest(): Promise<ReviewEntity[]> {
