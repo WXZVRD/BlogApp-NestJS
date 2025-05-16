@@ -83,7 +83,7 @@ export class AuthService implements IAuthService{
     }
 
     async generateJwtTokens(user: UserEntity): Promise<{ accessToken: string; refreshToken: string }> {
-        const payload = { email: user.email, sub: user.id };
+        const payload = { email: user.email, sub: user.id, role: user.role };
 
         const accessToken = this.jwtService.sign(payload, {
             expiresIn: '15m',
