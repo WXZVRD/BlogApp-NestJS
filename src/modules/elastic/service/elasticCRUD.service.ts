@@ -70,15 +70,65 @@ export class ElasticCRUDService {
         }
     }
 
-    async searchDocuments(index: string, query: Record<string, any>): Promise<any> {
+    async searchDocuments(index: string, text: string): Promise<any> {
+        if (!text || !text.trim()) {
+            throw new Error('Search query text is empty');
+        }
+
         try {
+            const query = {
+                bool: {
+                    should: [
+                        {
+                            match: {
+                                title: {
+                                    query: text,
+                                    operator: 'or',
+                                    fuzziness: 'auto',
+                                    prefix_length: 2,
+                                    boost: 3
+                                }
+                            }
+                        },
+                        {
+                            match_phrase: {
+                                title: {
+                                    query: text,
+                                    slop: 2,
+                                    boost: 4
+                                }
+                            }
+                        },
+                        {
+                            match: {
+                                content: {
+                                    query: text,
+                                    operator: 'or',
+                                    fuzziness: 'auto',
+                                    prefix_length: 2
+                                }
+                            }
+                        },
+                        {
+                            multi_match: {
+                                query: text,
+                                fields: ['title', 'content'],
+                                type: 'bool_prefix'
+                            }
+                        }
+                    ],
+                    minimum_should_match: 1
+                }
+            }
+
+            this.logger.debug(`Search query: ${JSON.stringify(query, null, 2)}`);
+
             const response = await this.client.search({
                 index,
-                body: {
-                    query,
-                },
+                body: { query }
             });
-            return response.hits.hits;
+
+            return response.hits.hits.map(hit => hit._source);
         } catch (error) {
             this.logger.error(`Failed to search documents in index "${index}"`, error.stack);
             throw error;
