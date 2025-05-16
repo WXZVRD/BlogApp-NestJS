@@ -61,6 +61,7 @@ export class ReviewService implements IReviewService{
         const reviewDocument = {
             cover: savedReview.cover || 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.peakpx.com%2Fen%2Fhd-wallpaper-desktop-erezp&psig=AOvVaw13AeWdf95EEFOQaDTJXzwJ&ust=1746835376703000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCNC4xISLlY0DFQAAAAAdAAAAABAE',
             title: savedReview.title,
+            content: savedReview.content
         };
 
         await this.elasticCRUDService.createDocument(

@@ -6,6 +6,7 @@ export const ESSyncMap: ITypedSyncMap = [
         fields: [
             { name: 'title', type: 'text' },
             { name: 'cover', type: 'text' },
+            { name: 'content', type: 'text'}
         ],
     },
 ];
