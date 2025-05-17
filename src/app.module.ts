@@ -14,6 +14,7 @@ import {UploadModule} from "./modules/uploader/upload.module";
 import {CloudinaryModule} from "./modules/cloudinary/cloudinary.module";
 import {SearchModule} from "./modules/search/search.module";
 import {ElasticModule} from "./modules/elastic/elastic.module";
+import {RedisModule} from "./modules/redis/redis.module";
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import {ElasticModule} from "./modules/elastic/elastic.module";
       UploadModule,
       CloudinaryModule,
       SearchModule,
-      ElasticModule
+      ElasticModule,
+      RedisModule
   ],
   controllers: [AppController],
   providers: [AppService],
