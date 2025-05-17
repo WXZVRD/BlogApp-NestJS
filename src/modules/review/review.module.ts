@@ -12,6 +12,8 @@ import {WorkModule} from "../work/work.module";
 import {RatingModule} from "../rating/rating.module";
 import {ElasticModule} from "../elastic/elastic.module";
 import {AuthModule} from "../auth/auth.module";
+import {RedisModule} from "../redis/redis.module";
+import {RedisService} from "../redis/redis.service";
 
 @Module({
     imports: [
@@ -23,7 +25,7 @@ import {AuthModule} from "../auth/auth.module";
         forwardRef(() => RatingModule),
     ],
     controllers: [ReviewController],
-    providers: [ReviewService, ReviewRepository, LikeRepository, LikeService],
+    providers: [ReviewService, ReviewRepository, LikeRepository, LikeService, RedisService],
     exports: [ReviewRepository, TypeOrmModule],
 })
 export class ReviewModule {}
