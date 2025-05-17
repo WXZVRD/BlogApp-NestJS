@@ -4,14 +4,11 @@ import {ReviewRepository} from "../repository/review.repository";
 import {ReviewEntity} from "../entity/review.entity";
 import {UserRepository} from "../../user/user.repository";
 import {LikeService} from "./like.service";
-import {UserEntity} from "../../user/entities/user.entity";
-import {SelectQueryBuilder} from "typeorm";
 import {ReviewGetAllDto} from "../dto/review-getAll.dto";
 import {WorkService} from "../../work/services/work.service";
 import {RatingService} from "../../rating/rating.service";
 import {RateTargetTypes} from "../../rating/types/rating.enum";
-import {workerData} from "worker_threads";
-import {ElasticCRUDService} from "../../elastic/service/elasticCRUD.service";
+import {ElasticService} from "../../elastic/service/elastic.service";
 import {RedisService} from "../../redis/redis.service";
 
 interface IReviewService{
@@ -35,7 +32,7 @@ export class ReviewService implements IReviewService {
         private readonly workService: WorkService,
         private readonly ratingService: RatingService,
         private readonly redisService: RedisService,
-        private readonly elasticCRUDService: ElasticCRUDService,
+        private readonly elasticService: ElasticService,
     ) {}
 
     async create(reviewData: ReviewCreateDto): Promise<ReviewEntity> {
@@ -57,7 +54,7 @@ export class ReviewService implements IReviewService {
                 content: savedReview.content,
             };
 
-            await this.elasticCRUDService.createDocument(
+            await this.elasticService.createDocument(
                 'review',
                 savedReview.id.toString(),
                 reviewDocument,
@@ -85,7 +82,7 @@ export class ReviewService implements IReviewService {
 
     async delete(id: number): Promise<void> {
         await this.reviewRepository.delete(id)
-        await this.elasticCRUDService.deleteDocument('review', id.toString())
+        await this.elasticService.deleteDocument('review', id.toString())
     }
 
     async update(id: number, reviewData): Promise<void> {

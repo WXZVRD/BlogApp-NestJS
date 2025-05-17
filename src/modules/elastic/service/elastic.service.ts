@@ -1,14 +1,29 @@
-import {Inject, Injectable, Logger} from "@nestjs/common";
+import {Inject, Injectable, Logger, OnModuleDestroy, OnModuleInit} from "@nestjs/common";
 import { Client } from "elasticsearch";
+import {ConfigService} from "@nestjs/config";
 
 @Injectable()
-export class ElasticCRUDService {
-    private readonly logger = new Logger(ElasticCRUDService.name);
+export class ElasticService implements OnModuleDestroy{
+    private client: Client
 
-    constructor(
-        @Inject('ELASTIC_CLIENT')
-        private readonly client: Client
-    ) {}
+    constructor(private readonly configService: ConfigService) {
+        this.client = new Client({
+            host: this.configService.get<string>('ELASTIC_URL'),
+            log: 'error',
+        });
+        console.log('Elasticsearch client initialized');
+    }
+
+    async onModuleDestroy(): Promise<void> {
+        if (this.client) {
+            await this.client.close();
+            console.log('Elasticsearch client closed');
+        }
+    }
+
+    getClient(): Client {
+        return this.client;
+    }
 
     async createDocument(index: string, id: string, document: Record<string, any>): Promise<void> {
         try {
@@ -18,9 +33,9 @@ export class ElasticCRUDService {
                 id,
                 body: document,
             });
-            this.logger.log(`Document with ID "${id}" created in index "${index}".`);
+            console.log(`Document with ID "${id}" created in index "${index}".`);
         } catch (error) {
-            this.logger.error(`Failed to create document in index "${index}"`, error.stack);
+            console.error(`Failed to create document in index "${index}"`, error.stack);
             throw error;
         }
     }
@@ -34,7 +49,7 @@ export class ElasticCRUDService {
             });
             return response._source;
         } catch (error) {
-            this.logger.error(`Failed to get document with ID "${id}" from index "${index}"`, error.stack);
+            console.error(`Failed to get document with ID "${id}" from index "${index}"`, error.stack);
             throw error;
         }
     }
@@ -49,9 +64,9 @@ export class ElasticCRUDService {
                     doc: update,
                 },
             });
-            this.logger.log(`Document with ID "${id}" updated in index "${index}".`);
+            console.log(`Document with ID "${id}" updated in index "${index}".`);
         } catch (error) {
-            this.logger.error(`Failed to update document with ID "${id}" in index "${index}"`, error.stack);
+            console.error(`Failed to update document with ID "${id}" in index "${index}"`, error.stack);
             throw error;
         }
     }
@@ -63,9 +78,9 @@ export class ElasticCRUDService {
                 index,
                 id,
             });
-            this.logger.log(`Document with ID "${id}" deleted from index "${index}".`);
+            console.log(`Document with ID "${id}" deleted from index "${index}".`);
         } catch (error) {
-            this.logger.error(`Failed to delete document with ID "${id}" from index "${index}"`, error.stack);
+            console.error(`Failed to delete document with ID "${id}" from index "${index}"`, error.stack);
             throw error;
         }
     }
@@ -121,7 +136,7 @@ export class ElasticCRUDService {
                 }
             }
 
-            this.logger.debug(`Search query: ${JSON.stringify(query, null, 2)}`);
+            console.debug(`Search query: ${JSON.stringify(query, null, 2)}`);
 
             const response = await this.client.search({
                 index,
@@ -130,7 +145,7 @@ export class ElasticCRUDService {
 
             return response.hits.hits.map(hit => hit._source);
         } catch (error) {
-            this.logger.error(`Failed to search documents in index "${index}"`, error.stack);
+            console.error(`Failed to search documents in index "${index}"`, error.stack);
             throw error;
         }
     }
