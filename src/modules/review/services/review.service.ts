@@ -12,6 +12,7 @@ import {RatingService} from "../../rating/rating.service";
 import {RateTargetTypes} from "../../rating/types/rating.enum";
 import {workerData} from "worker_threads";
 import {ElasticCRUDService} from "../../elastic/service/elasticCRUD.service";
+import {RedisService} from "../../redis/redis.service";
 
 interface IReviewService{
     getHello(): string
@@ -33,6 +34,7 @@ export class ReviewService implements IReviewService {
         private readonly likeService: LikeService,
         private readonly workService: WorkService,
         private readonly ratingService: RatingService,
+        private readonly redisService: RedisService,
         private readonly elasticCRUDService: ElasticCRUDService,
     ) {}
 
@@ -108,12 +110,50 @@ export class ReviewService implements IReviewService {
         return this.likeService.toggleLike(user, review)
     }
 
-    getLatest(): Promise<ReviewEntity[]> {
-        return this.reviewRepository.getLatest()
+    async getLatest(): Promise<ReviewEntity[]> {
+        const cacheKey = "review:latest";
+
+        const cachedLatestReview = await this.redisService.get<ReviewEntity[]>(cacheKey);
+        if (cachedLatestReview) {
+            console.log("Cache hit: returning cached latest reviews.");
+            return cachedLatestReview;
+        }
+
+        console.log("Cache miss: fetching latest reviews from database...");
+        const latestReviews = await this.reviewRepository.getLatest();
+
+        if (!latestReviews || latestReviews.length === 0) {
+            console.warn("No latest reviews found in database.");
+            throw new NotFoundException('Latest reviews not found');
+        }
+
+        await this.redisService.set(cacheKey, latestReviews, 5);
+        console.log("Latest reviews cached successfully.");
+
+        return latestReviews;
     }
 
-    getMostRated(): Promise<ReviewEntity[]> {
-        return this.reviewRepository.getMostRated()
+    async getMostRated(): Promise<ReviewEntity[]> {
+        const cacheKey = "review:rated";
+
+        const cachedRatedReview = await this.redisService.get<ReviewEntity[]>(cacheKey);
+        if (cachedRatedReview) {
+            console.log("Cache hit: returning cached most rated reviews.");
+            return cachedRatedReview;
+        }
+
+        console.log("Cache miss: fetching most rated reviews from database...");
+        const mostRatedReview = await this.reviewRepository.getMostRated();
+
+        if (!mostRatedReview || mostRatedReview.length === 0) {
+            console.warn("No most rated reviews found in database.");
+            throw new NotFoundException('Most rated reviews not found');
+        }
+
+        await this.redisService.set(cacheKey, mostRatedReview, 5);
+        console.log("Most rated reviews cached successfully.");
+
+        return mostRatedReview;
     }
 
     async getOne(id: number): Promise<ReviewEntity> {
