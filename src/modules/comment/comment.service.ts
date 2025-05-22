@@ -5,7 +5,7 @@ import {UserRepository} from "../user/user.repository";
 import {CommentCreateDto} from "./dto/comment-create.dto";
 import {ReviewRepository} from "../review/repository/review.repository";
 import {DeleteResult} from "typeorm";
-import {ReviewEntity} from "../review/entity/review.entity";
+import {CommentGateway} from "./comment.gateway";
 
 interface ICommentService {
     getAll(): Promise<CommentEntity[]>
@@ -24,7 +24,8 @@ export class CommentService implements ICommentService{
     constructor(
         private readonly userRepository: UserRepository,
         private readonly reviewRepository: ReviewRepository,
-        private readonly commentRepository: CommentRepository
+        private readonly commentRepository: CommentRepository,
+        private readonly commentGateway: CommentGateway
     ) {
     }
 
@@ -41,7 +42,11 @@ export class CommentService implements ICommentService{
 
         const createdComment = await this.commentRepository.create(commentData, existingUser, existingReview)
 
-        return await this.commentRepository.save(createdComment)
+        const savedComment = await this.commentRepository.save(createdComment);
+
+        this.commentGateway.sendNewComment(commentData.reviewId, savedComment);
+
+        return savedComment;
     }
 
     getAll(): Promise<CommentEntity[]> {
