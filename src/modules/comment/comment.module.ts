@@ -7,6 +7,7 @@ import {CommentEntity} from "./entity/comment.entity";
 import {UserModule} from "../user/user.module";
 import {ReviewModule} from "../review/review.module";
 import {AuthModule} from "../auth/auth.module";
+import {CommentGateway} from "./comment.gateway";
 
 
 @Module({
@@ -17,7 +18,7 @@ import {AuthModule} from "../auth/auth.module";
         ReviewModule
     ],
     controllers: [CommentController],
-    providers: [CommentService, CommentRepository],
+    providers: [CommentService, CommentGateway, CommentRepository],
     exports: [CommentService]
 })
 export class CommentModule{}

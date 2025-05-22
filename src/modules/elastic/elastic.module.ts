@@ -1,20 +1,16 @@
-import {Logger, Module} from "@nestjs/common";
-import {ElasticProvider} from "./provider/elastic.provider";
-import {ElasticHealthService} from "./service/elasticHealth.service";
+import {Module} from "@nestjs/common";
 import {ElasticSyncService} from "./service/elasticSync.service";
 import {ElasticSyncMapProvider} from "./provider/elasticSyncMap.provider";
-import {ElasticCRUDService} from "./service/elasticCRUD.service";
+import {ElasticService} from "./service/elastic.service";
 
 
 @Module({
     imports: [],
     providers: [
-        ElasticProvider,
-        ElasticHealthService,
         ElasticSyncService,
         ElasticSyncMapProvider,
-        ElasticCRUDService
+        ElasticService
     ],
-    exports: [ElasticProvider, ElasticCRUDService]
+    exports: [ElasticService]
 })
 export class ElasticModule{}

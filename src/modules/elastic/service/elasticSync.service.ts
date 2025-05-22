@@ -1,6 +1,7 @@
 import { Inject, Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import {ITypedSyncMap, ITypedTable} from "../types/map-tables.type";
 import { Client } from "elasticsearch";
+import {ElasticService} from "./elastic.service";
 
 @Injectable()
 export class ElasticSyncService implements OnModuleInit {
@@ -9,9 +10,7 @@ export class ElasticSyncService implements OnModuleInit {
     constructor(
         @Inject('ES_SYNC_MAP')
         private readonly esSyncMap: ITypedSyncMap,
-
-        @Inject('ELASTIC_CLIENT')
-        private readonly client: Client,
+        private readonly elasticService: ElasticService
     ) {}
 
     async onModuleInit(): Promise<void> {
@@ -29,7 +28,7 @@ export class ElasticSyncService implements OnModuleInit {
 
     private async isIndiceExist(indexName: string): Promise<boolean> {
         try {
-            return await this.client.indices.exists({ index: indexName });
+            return await this.elasticService.getClient().indices.exists({ index: indexName });
         } catch (error) {
             this.logger.error(`Failed to check if index "${indexName}" exists`, error.stack);
             throw error;
@@ -42,7 +41,7 @@ export class ElasticSyncService implements OnModuleInit {
             return acc;
         }, {} as Record<string, any>);
 
-        await this.client.indices.create({
+        await this.elasticService.getClient().indices.create({
             index: tableOptions.tableName,
             method: 'PUT',
             body: {
