@@ -30,7 +30,7 @@ import {RedisModule} from "./modules/redis/redis.module";
       CloudinaryModule,
       SearchModule,
       ElasticModule,
-      RedisModule
+      //RedisModule
   ],
   controllers: [AppController],
   providers: [AppService],
