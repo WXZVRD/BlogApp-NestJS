@@ -51,19 +51,49 @@ export class ReviewRepository {
     }
 
     getLatest(): Promise<ReviewEntity[]> {
-        return this.reviewRepository.find({
-            take: 10,
-            order: {
-                createdAt: 'DESC'
-            }
-        })
+        return this.reviewRepository
+            .createQueryBuilder('review')
+            .leftJoinAndSelect('review.user', 'user')
+            .select([
+                'review.id',
+                'review.title',
+                'review.cover',
+                'review.content',
+                'review.averageRating',
+                'review.ratingCount',
+                'review.createdAt',
+                'review.updatedAt',
+                'user.id',
+                'user.first_name',
+                'user.last_name',
+                'user.avatarUrl',
+            ])
+            .orderBy('review.createdAt', 'DESC')
+            .take(10)
+            .getMany();
     }
 
     getMostRated(): Promise<ReviewEntity[]> {
-        return this.reviewRepository.find({
-            take: 10,
-            order: { averageRating: "DESC"}
-        })
+        return this.reviewRepository
+            .createQueryBuilder('review')
+            .leftJoinAndSelect('review.user', 'user')
+            .select([
+                'review.id',
+                'review.title',
+                'review.cover',
+                'review.content',
+                'review.averageRating',
+                'review.ratingCount',
+                'review.createdAt',
+                'review.updatedAt',
+                'user.id',
+                'user.first_name',
+                'user.last_name',
+                'user.avatarUrl',
+            ])
+            .orderBy('review.averageRating', 'DESC')
+            .take(10)
+            .getMany();
     }
 
     async save(reviewToSave: ReviewEntity ) {

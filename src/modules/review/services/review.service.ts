@@ -1,4 +1,4 @@
-import {Injectable, InternalServerErrorException, Logger, NotFoundException} from "@nestjs/common";
+import {Injectable, InternalServerErrorException, NotFoundException} from "@nestjs/common";
 import {ReviewCreateDto} from "../dto/review-create.dto";
 import {ReviewRepository} from "../repository/review.repository";
 import {ReviewEntity} from "../entity/review.entity";
@@ -121,7 +121,7 @@ export class ReviewService implements IReviewService {
 
         if (!latestReviews || latestReviews.length === 0) {
             console.warn("No latest reviews found in database.");
-            throw new NotFoundException('Latest reviews not found');
+            return [];
         }
 
         await this.redisService.set(cacheKey, latestReviews, 5);
