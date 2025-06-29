@@ -43,15 +43,22 @@ export class UserController {
         @Param('id') id: string,
         @Body() updateUserDto: IUserUpdateDto,
     ): Promise<UserEntity> {
-        this.logger.log(`Updating user with id ${id}`);
+        console.log(`[PUT] /users/${id} — попытка обновления пользователя`);
+        console.debug(`Payload: ${JSON.stringify(updateUserDto)}`);
+
         const updated = await this.userService.update(id, updateUserDto);
+
         if (!updated) {
-            this.logger.warn(`User with id ${id} not found for update`);
-            throw new NotFoundException(`User with id ${id} not found`);
+            console.warn(`[PUT] /users/${id} — пользователь не найден`);
+            throw new NotFoundException(`Пользователь с ID ${id} не найден`);
         }
-        this.logger.log(`User with id ${id} updated`);
+
+        console.log(`[PUT] /users/${id} — пользователь успешно обновлён`);
+        console.debug(`Обновлённые данные: ${JSON.stringify(updated)}`);
+
         return updated;
     }
+
 
     @Delete(':id')
     async deleteUser(@Param('id') id: string): Promise<{ message: string }> {

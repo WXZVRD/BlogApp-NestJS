@@ -21,6 +21,7 @@ interface IReviewService{
     delete(id: number): Promise<void>
     toggleLike(userId: number, reviewId: number): Promise<void>
     update(id: number, reviewData: ReviewEntity): Promise<void>
+    getByAuthor(authorId: number): Promise<ReviewEntity[]>
 }
 
 @Injectable()
@@ -37,28 +38,39 @@ export class ReviewService implements IReviewService {
 
     async create(reviewData: ReviewCreateDto): Promise<ReviewEntity> {
         try {
+            console.log("🚀 Начало создания рецензии:", reviewData);
+
             const author = await this.userRepository.findById(reviewData.authorId);
             if (!author) {
+                console.warn("⚠️ Пользователь не найден по ID:", reviewData.authorId);
                 throw new NotFoundException('User not found');
             }
+            console.log("👤 Найден автор:", author);
 
             const createdReview = this.reviewRepository.create(reviewData, author);
+            console.log("🛠️ Создана рецензия (до сохранения):", createdReview);
 
             const savedReview = await this.reviewRepository.save(createdReview);
+            console.log("💾 Рецензия сохранена в БД:", savedReview);
 
             const reviewDocument = {
+                id: savedReview.id,
+                title: savedReview.title,
                 cover:
                     savedReview.cover ||
-                    'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.peakpx.com%2Fen%2Fhd-wallpaper-desktop-erezp&psig=AOvVaw13AeWdf95EEFOQaDTJXzwJ&ust=1746835376703000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCNC4xISLlY0DFQAAAAAdAAAAABAE',
-                title: savedReview.title,
+                    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNr62PA6NV5OxD8VoMyVnSQs-e9_nalSC-kg&s',
                 content: savedReview.content,
+                averageRating: savedReview.averageRating,
+                createdAt: savedReview.createdAt,
             };
+            console.log("📄 Документ для Elasticsearch:", reviewDocument);
 
             await this.elasticService.createDocument(
                 'review',
                 savedReview.id.toString(),
                 reviewDocument,
             );
+            console.log("🔍 Документ добавлен в Elasticsearch");
 
             await this.ratingService.rate(
                 author.id,
@@ -66,11 +78,27 @@ export class ReviewService implements IReviewService {
                 RateTargetTypes.WORK,
                 reviewData.workData.rating,
             );
+            console.log("⭐ Поставлен рейтинг работе:", {
+                userId: author.id,
+                workId: reviewData.workData.id,
+                rating: reviewData.workData.rating,
+            });
 
             return savedReview;
         } catch (error) {
+            console.error("❌ Ошибка при создании рецензии:", error);
             throw new InternalServerErrorException('Failed to create review');
         }
+    }
+
+
+    async getByAuthor(authorId: number): Promise<ReviewEntity[]> {
+        const author = await this.userRepository.findById(authorId);
+        if (!author) {
+            throw new NotFoundException("Author not found");
+        }
+
+        return this.reviewRepository.findByAuthorId(authorId);
     }
 
     async search(query: ReviewGetAllDto): Promise<{ data: ReviewEntity[]; total: number }> {
@@ -85,12 +113,8 @@ export class ReviewService implements IReviewService {
         await this.elasticService.deleteDocument('review', id.toString())
     }
 
-    async update(id: number, reviewData): Promise<void> {
-        const result = await this.reviewRepository.update(id, reviewData)
-
-        if (result.affected === 0) {
-            throw new NotFoundException('Review not found');
-        }
+    async update(id: number, reviewData: Partial<ReviewEntity>): Promise<void> {
+        const result = await this.reviewRepository.update(id, reviewData);
     }
 
     async toggleLike(userId: number, reviewId: number): Promise<void> {
@@ -154,10 +178,17 @@ export class ReviewService implements IReviewService {
     }
 
     async getOne(id: number): Promise<ReviewEntity> {
+        console.log(`🔎 Поиск рецензии с ID: ${id}`);
+
         const review = await this.reviewRepository.findById(id);
+
         if (!review) {
+            console.warn(`⚠️ Рецензия с ID ${id} не найдена`);
             throw new NotFoundException("Review was not found");
         }
+
+        console.log(`✅ Рецензия найдена: ${JSON.stringify(review, null, 2)}`);
+
         return review;
     }
 

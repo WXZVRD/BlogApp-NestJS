@@ -31,9 +31,12 @@ export class ReviewRepository {
         })
     }
 
-    async update(id: number, reviewData: Partial<ReviewEntity>): Promise<UpdateResult> {
-        return await this.reviewRepository.update(id, reviewData)
+    async update(id: number, reviewData: Partial<ReviewEntity>): Promise<ReviewEntity> {
+        const review = await this.reviewRepository.findOneByOrFail({ id });
+        Object.assign(review, reviewData);
+        return await this.reviewRepository.save(review);
     }
+
 
     async delete(id: number): Promise<void> {
         await this.reviewRepository.delete({ id });
@@ -95,6 +98,18 @@ export class ReviewRepository {
             .take(10)
             .getMany();
     }
+
+    async findByAuthorId(authorId: number): Promise<ReviewEntity[]> {
+        return this.reviewRepository
+            .createQueryBuilder('review')
+            .where('review.userId = :authorId', { authorId })
+            .leftJoinAndSelect('review.user', 'user')
+            .leftJoinAndSelect('review.comments', 'comments')
+            .leftJoinAndSelect('review.likes', 'likes')
+            .orderBy('review.createdAt', 'DESC')
+            .getMany();
+    }
+
 
     async save(reviewToSave: ReviewEntity ) {
         return await this.reviewRepository.save(reviewToSave)

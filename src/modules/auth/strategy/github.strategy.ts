@@ -1,11 +1,10 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {ConfigService} from '@nestjs/config';
 import {PassportStrategy} from '@nestjs/passport';
 import * as GitHubStrategy from 'passport-github';
 import {Profile} from 'passport-github';
 import {UserRepository} from "../../user/user.repository";
 import {AuthProviders} from "../../../shared/enums/auth/authProvider";
-import {UserEntity} from "../../user/entities/user.entity";
 
 const { Strategy } = GitHubStrategy;
 

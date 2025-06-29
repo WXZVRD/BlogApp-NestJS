@@ -47,10 +47,20 @@ export class AuthService implements IAuthService{
 
         const savedUser = await this.userRepository.save(createdUser)
 
+        const clientUser: Partial<UserEntity> = {
+            id: savedUser.id,
+            email: savedUser.email,
+            first_name: savedUser.first_name,
+            last_name: savedUser.last_name,
+            role: savedUser.role,
+            avatarUrl: savedUser.avatarUrl,
+        }
+
+
         const { accessToken, refreshToken } = await this.generateJwtTokens(savedUser)
 
         return {
-            user: savedUser,
+            user: clientUser,
             accessToken,
             refreshToken
         }
@@ -77,10 +87,46 @@ export class AuthService implements IAuthService{
 
         const { accessToken, refreshToken } = await this.generateJwtTokens(existingUser)
 
+        const isPasswordValid = await bcrypt.compare(logDto.password, existingUser.password_hash)
+        if (!isPasswordValid) {
+            throw new BadRequestException("password is not true!")
+        }
+
+        const clientUser: Partial<UserEntity> = {
+            id: existingUser.id,
+            email: existingUser.email,
+            first_name: existingUser.first_name,
+            last_name: existingUser.last_name,
+            role: existingUser.role,
+            avatarUrl: existingUser.avatarUrl,
+        }
+
         return {
-            user: existingUser,
+            user: clientUser,
             accessToken,
             refreshToken
+        }
+    }
+
+    async authMe(refreshToken: string): Promise<IServerAuthResponse> {
+        try {
+            const payload = await this.jwtService.verifyAsync(refreshToken);
+
+            const user = await this.userRepository.findById(payload.sub);
+
+            if (!user) {
+                throw new BadRequestException('User not found');
+            }
+
+            const { accessToken, refreshToken: newRefreshToken } = await this.generateJwtTokens(user);
+
+            return {
+                user,
+                accessToken,
+                refreshToken: newRefreshToken,
+            };
+        } catch (err) {
+            throw new BadRequestException('Invalid refresh token');
         }
     }
 

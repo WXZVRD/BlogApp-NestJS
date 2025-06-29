@@ -1,7 +1,7 @@
 import {UserEntity} from "../../user/entities/user.entity";
 
 export interface IServerAuthResponse {
-    user: UserEntity,
+    user: Partial<UserEntity>,
     accessToken: string,
     refreshToken: string
 }

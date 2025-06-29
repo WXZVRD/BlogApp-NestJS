@@ -67,18 +67,29 @@ export class UserRepository {
         })
     }
 
-    async updateUser(id: number, updateUserDto: Partial<UserEntity>): Promise<UserEntity | null> {
-        const user = await this.userRepository.findOne({
-            where: {id}
-        });
+    async updateUser(
+        id: number,
+        updateUserDto: Partial<UserEntity>
+    ): Promise<UserEntity | null> {
+
+        console.log(`Попытка обновления пользователя с ID: ${id}`);
+        console.debug(`Данные для обновления: ${JSON.stringify(updateUserDto)}`);
+
+        const user = await this.userRepository.findOne({ where: { id } });
 
         if (!user) {
+            console.warn(`Пользователь с ID ${id} не найден`);
             return null;
         }
 
+        console.log(`Пользователь найден: ${user.email || user.id}`);
         Object.assign(user, updateUserDto);
 
-        return await this.userRepository.save(user);
+        const updatedUser = await this.userRepository.save(user);
+        console.log(`Пользователь с ID ${id} успешно обновлён`);
+        console.debug(`Обновлённые данные: ${JSON.stringify(updatedUser)}`);
+
+        return updatedUser;
     }
 
     async delete(id: number): Promise<boolean> {

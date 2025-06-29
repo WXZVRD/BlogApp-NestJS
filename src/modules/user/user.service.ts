@@ -54,20 +54,30 @@ export class UserService implements IUserService {
     }
 
     async update(id: string, updateUserDto: IUserUpdateDto): Promise<UserEntity | null> {
-        this.logger.log(`Updating user with id ${id}`);
+        console.log(`[Service] [User Update] Начало обновления пользователя с id: ${id}`);
+        console.debug(`[Service] [User Update] DTO: ${JSON.stringify(updateUserDto)}`);
+
         try {
             const updatedUser = await this.userRepository.updateUser(+id, updateUserDto);
+
             if (!updatedUser) {
-                this.logger.warn(`User with id ${id} not found for update`);
-                throw new NotFoundException('User not found');
+                console.warn(`[Service] [User Update] Пользователь с id ${id} не найден`);
+                throw new NotFoundException('Пользователь не найден');
             }
-            this.logger.log(`User with id ${id} successfully updated`);
+
+            console.log(`[Service] [User Update] Пользователь с id ${id} успешно обновлён`);
+            console.debug(`[Service] [User Update] Результат: ${JSON.stringify(updatedUser)}`);
+
             return updatedUser;
         } catch (error) {
-            this.logger.error(`Failed to update user with id ${id}`, error.stack);
-            throw new InternalServerErrorException('Failed to update user');
+            console.error(
+                `[Service] [User Update] Ошибка при обновлении пользователя с id ${id}: ${error.message}`,
+                error.stack,
+            );
+            throw new InternalServerErrorException('Ошибка при обновлении пользователя');
         }
     }
+
 
     async delete(id: number): Promise<boolean> {
         this.logger.log(`Attempting to delete user with id ${id}`);

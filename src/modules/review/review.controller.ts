@@ -48,17 +48,28 @@ export class ReviewController{
 
     @Get('/screen/:id')
     async getOne(@Param('id', ParseIntPipe) id: number): Promise<ReviewEntity> {
+        console.log(`📥 Получение рецензии по ID: ${id}`);
+
         const review = await this.reviewService.getOne(id);
-        if (!review) {
-            throw new NotFoundException(`Review with id ${id} not found`);
-        }
+
+        console.debug(`📤 Получено: ${JSON.stringify(review, null, 2)}`);
+
         return review;
     }
 
     @Get('/latest')
+    @UseGuards(AuthGuard)
     getLatest(): Promise<ReviewEntity[]> {
         return this.reviewService.getLatest();
     }
+
+    @Get('/author/:authorId')
+    async getByAuthor(
+        @Param('authorId', ParseIntPipe) authorId: number
+    ): Promise<ReviewEntity[]> {
+        return this.reviewService.getByAuthor(authorId);
+    }
+
 
     @Get('/most-rated')
     getMostRated(): Promise<ReviewEntity[]> {
