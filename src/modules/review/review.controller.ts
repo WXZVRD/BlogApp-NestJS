@@ -58,7 +58,6 @@ export class ReviewController{
     }
 
     @Get('/latest')
-    @UseGuards(AuthGuard)
     getLatest(): Promise<ReviewEntity[]> {
         return this.reviewService.getLatest();
     }
