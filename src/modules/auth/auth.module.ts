@@ -15,7 +15,7 @@ import {GithubOauthStrategy} from "./strategy/github.strategy";
             imports: [ConfigModule],
             useFactory: async (configService: ConfigService) => ({
                 global: true,
-                secretOrPrivateKey: configService.get<string>('JWT_SECRET'),
+                secret: configService.get<string>('JWT_SECRET'),
             }),
             inject: [ConfigService],
         })
