@@ -1,98 +1,94 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🗂 BlogApp-Ultra Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+![NestJS](https://img.shields.io/badge/Backend-NestJS-red?logo=nestjs)
+![TypeScript](https://img.shields.io/badge/Language-TypeScript-3178C6?logo=typescript)
+![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791?logo=postgresql)
+![Redis](https://img.shields.io/badge/Cache-Redis-DC382D?logo=redis)
+![TypeORM](https://img.shields.io/badge/ORM-TypeORM-262627?logo=typeorm)
+![Socket.IO](https://img.shields.io/badge/Websockets-Socket.IO-010101?logo=socketdotio)
+![Swagger](https://img.shields.io/badge/Docs-Swagger-85EA2D?logo=swagger)
+![Passport](https://img.shields.io/badge/Auth-Passport-34E27A?logo=passport)
+![JWT](https://img.shields.io/badge/Security-JWT-black?logo=jsonwebtokens)
+![Docker](https://img.shields.io/badge/DevOps-Docker-2496ED?logo=docker)
+![Elasticsearch](https://img.shields.io/badge/Search-Elasticsearch-005571?logo=elasticsearch)
+![Cloudinary](https://img.shields.io/badge/Storage-Cloudinary-4285F4?logo=cloudinary)
+![Jest](https://img.shields.io/badge/Tests-Jest-C21325?logo=jest)
+![ESLint](https://img.shields.io/badge/Lint-ESLint-4B32C3?logo=eslint)
+![Prettier](https://img.shields.io/badge/Format-Prettier-F7B93E?logo=prettier)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+> **Русский:** Платформа для рецензий на фильмы, книги и мультфильмы с поддержкой markdown-разметки, комментариев, лайков и рейтингов. Встроенная админ-панель обеспечивает управление пользователями и контентом.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+> **English:** A review platform for movies, books, and animations with markdown support, comments, likes, and ratings. The integrated admin panel enables full control over users and content.
 
-## Project setup
+---
 
-```bash
-$ npm install
-```
+## 🎬 Демонстрация функций / Project Demo
 
-## Compile and run the project
+| GIF                                           | Описание / Description |
+|-----------------------------------------------|------------------------|
+| ![OAuth](./assets/BlogApp-Auth.gif)           | 🇷🇺 OAuth авторизация. <br><br> 🇺🇸 OAuth authorization. |
+| ![Main Overview](./assets/BlogApp-Main1.gif) | 🇷🇺 Основной обзор приложения: главная панель управления, страницы рецензий, комментариев и пользователей. <br> 🇺🇸 Main overview of the app: dashboard, review pages, comments, and user management. |
+| ![Comments & Likes](./assets/BlogApp-Comments.gif) | 🇷🇺 Создание комментариев и лайков с мгновенной синхронизацией через WebSocket. <br><br> 🇺🇸 Adding comments and likes with real-time synchronization via WebSocket. |
+| ![Main Overview](./assets/BlogApp-Main2.gif) | 🇷🇺 Управление рецензиями и пользователями: редактирование, сортировка и навигация по разделам. <br><br> 🇺🇸 Managing reviews and users: editing, sorting, and navigating through sections. |
+| ![Create Review](./assets/BlogApp-Create.gif) | 🇷🇺 Создание новой рецензии с поддержкой markdown и загрузки изображений. <br><br> 🇺🇸 Creating a new review with markdown support and image upload. |
 
-```bash
-# development
-$ npm run start
+## 🔹 Полное описание / Full Description
 
-# watch mode
-$ npm run start:dev
+🇷🇺 Русский:
+Backend ReviewApp обеспечивает платформу для публикации рецензий на фильмы, книги и мультфильмы. Поддерживаются markdown-разметка, загрузка изображений, комментарии и система лайков. Реализована система рейтингов для рецензий и произведений. Админ-панель предоставляет управление пользователями, рецензиями и контентом. Поддерживается двухфакторная аутентификация, почтовые уведомления (регистрация, подтверждение аккаунта, восстановление пароля), контроль доступа и аналитика активности. Используется WebSocket для синхронизации комментариев и лайков в реальном времени.
 
-# production mode
-$ npm run start:prod
-```
+🇺🇸 English:
+ReviewApp backend powers a platform for publishing reviews of movies, books, and animations. It supports markdown formatting, image uploads, comments, and a like system. A rating system is implemented for both reviews and works. The admin panel enables user, review, and content management. Two-factor authentication, email notifications (registration, account confirmation, password recovery), access control, and activity analytics are included. Real-time synchronization of comments and likes is handled via WebSocket.
+---
 
-## Run tests
+## 📌 Основные фичи / Features
 
-```bash
-# unit tests
-$ npm run test
+🇷🇺 Русский:
 
-# e2e tests
-$ npm run test:e2e
+🔑 Авторизация: стандартная, OAuth (GitHub)<br>
+📝 Рецензии: создание, редактирование и удаление с поддержкой markdown-разметки<br>
+🖼 Загрузка изображений: добавление картинок в рецензии и аватары пользователей<br>
+💬 Комментарии: добавление, редактирование и удаление комментариев<br>
+👍 Лайки: система лайков для рецензий и комментариев<br>
+⭐ Рейтинги: оценки для рецензий и произведений<br>
+🔄 WebSocket: синхронизация комментариев и лайков в реальном времени<br>
+🔍 Полнотекстовый поиск (Elasticsearch): гибкий поиск по рецензиям, комментариям и произведениям. Даже при ошибках в запросе или опечатках система находит релевантные результаты<br>
+🔁 Модуль ElasticSync: автоматическая синхронизация данных из PostgreSQL в Elasticsearch, с динамическим созданием индексов и маппингов<br>
+🛡 Контроль доступа: роли администратора и пользователя<br>
+⚙️ Админ-панель: управление пользователями, рецензиями и контентом<br>
+🔒 Безопасность: каптча при регистрации/логине, защита сессий<br>
+📜 Документация API через Swagger и JSDoc<br>
 
-# test coverage
-$ npm run test:cov
-```
+🇺🇸 English:
 
-## Deployment
+🔑 Authentication: standard, OAuth (Google/Yandex), two-factor, password reset <br>
+📝 Reviews: create, edit, and delete with markdown support<br>
+🖼 Image uploads: add images to reviews and user avatars<br>
+💬 Comments: add, edit, and delete comments<br>
+👍 Likes: like system for reviews and comments<br>
+⭐ Ratings: scoring system for reviews and works<br>
+🔄 WebSocket: real-time sync for comments and likes<br>
+🔍 Full-text search (Elasticsearch): flexible search across reviews, comments, and works. Even with typos or mistakes, the system returns relevant results<br>
+🔁 ElasticSync module: automatic synchronization of PostgreSQL data to Elasticsearch with dynamic index and mapping creation<br>
+🛡 Access control: admin and user roles<br>
+⚙️ Admin panel: manage users, reviews, and content<br>
+🔒 Security: CAPTCHA on registration/login, secure session management<br>
+📜 API documentation with Swagger and JSDoc<br>
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## 🛠 Технологии / Technologies & Tools
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Компонент / Component          | Технология / Technology |
+|--------------------------------|--------------------------|
+| 🌐 Ядро / Core                  | NestJS                  |
+| 🗄 База данных / Database       | PostgreSQL (TypeORM)    |
+| ⚡ Кеширование / Cache          | Redis + ioredis         |
+| 🔍 Поиск / Search               | Elasticsearch + ElasticSync |
+| 🔑 Авторизация / Auth & Sessions| Passport (JWT, OAuth2), argon2 |
+| 🔄 Реальное время / Real-time   | WebSocket (Socket.IO)   |
+| 🛡 Безопасность / Security      | Helmet, Captcha, Rate limiting |
+| 📝 Документация / Documentation | Swagger, JSDoc          |
+| 📊 Логирование / Logging        | pino, pino-pretty, nestjs-pino |
+| ⚙️ Дополнительно / Additional   | RxJS, class-validator, class-transformer, compression |
